@@ -1,0 +1,50 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "anil/hbl",
+    "description": "Laravel package for HBL Payment Gateway integration via PACO (JWE/JWS)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Er. Anil Kumar Thakur",
+            "email": "anilkumarthakur60@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3|^8.4",
+        "ext-openssl": "*",
+        "nesbot/carbon": "^3.10",
+        "web-token/jwt-framework": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Anil\\Hbl\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Anil\\Hbl\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev",
+            "dev-master": "1.x-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Anil\\Hbl\\Providers\\HblProvider"
+            ]
+        }
+    },
+    "support": {
+        "issues": "https://github.com/AnilThakur/Hbl/issues",
+        "source": "https://github.com/AnilThakur/Hbl"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}

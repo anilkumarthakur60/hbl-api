@@ -22,18 +22,18 @@ class HblProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../../config/hbl.php' => config_path('hbl.php'),
+                __DIR__.'/../../config/hbl.php' => config_path('hbl.php'),
             ], 'hbl-config');
         }
     }
 
     protected function bindHbl()
     {
-        $this->app->bind('hbl', fn() => new Hbl());
+        $this->app->bind('hbl', fn () => new Hbl);
     }
 
     protected function mergeConfig()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/hbl.php', 'hbl');
+        $this->mergeConfigFrom(__DIR__.'/../../config/hbl.php', 'hbl');
     }
 }
