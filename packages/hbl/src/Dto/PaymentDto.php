@@ -14,13 +14,13 @@ use JsonSerializable;
 final class PaymentDto implements JsonSerializable
 {
     /**
-     * @param string       $orderNo      Unique merchant order reference
-     * @param float        $amount       Payment amount (e.g. 100.00)
-     * @param string       $successUrl   URL to redirect to on successful payment
-     * @param string       $failedUrl    URL to redirect to on failed payment
-     * @param string       $cancelUrl    URL to redirect to if user cancels
-     * @param string       $backendUrl   Merchant endpoint to receive server-to-server notifications
-     * @param array<string, mixed> $customFields  Any additional key/value data
+     * @param  string  $orderNo  Unique merchant order reference
+     * @param  float  $amount  Payment amount (e.g. 100.00)
+     * @param  string  $successUrl  URL to redirect to on successful payment
+     * @param  string  $failedUrl  URL to redirect to on failed payment
+     * @param  string  $cancelUrl  URL to redirect to if user cancels
+     * @param  string  $backendUrl  Merchant endpoint to receive server-to-server notifications
+     * @param  array<string, mixed>  $customFields  Any additional key/value data
      */
     public function __construct(
         private string $orderNo,
@@ -80,12 +80,12 @@ final class PaymentDto implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'order_no'      => $this->orderNo,
-            'amount'        => $this->amount,
-            'success_url'   => $this->successUrl,
-            'failed_url'    => $this->failedUrl,
-            'cancel_url'    => $this->cancelUrl,
-            'backend_url'   => $this->backendUrl,
+            'order_no' => $this->orderNo,
+            'amount' => $this->amount,
+            'success_url' => $this->successUrl,
+            'failed_url' => $this->failedUrl,
+            'cancel_url' => $this->cancelUrl,
+            'backend_url' => $this->backendUrl,
             'custom_fields' => $this->customFields,
         ];
     }
