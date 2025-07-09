@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Anil\Hbl\HblPayment;
 use Anil\Hbl\Payment;
 use Anil\Hbl\PaymentObject;
 use Illuminate\Http\Request;
@@ -14,10 +13,10 @@ class PaymentController extends Controller
     {
 
         try {
-            $success_url = config('app.url') . '/success';
-            $failed_url = config('app.url') . '/failed';
-            $cancel_url = config('app.url') . '/cancel';
-            $backend_url = config('app.url') . '/backend';
+            $success_url = config('app.url').'/success';
+            $failed_url = config('app.url').'/failed';
+            $cancel_url = config('app.url').'/cancel';
+            $backend_url = config('app.url').'/backend';
             $order_no = (string) Str::random(15);
             $amount = 100;
 

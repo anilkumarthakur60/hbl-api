@@ -51,6 +51,8 @@
 <form id="payment_form" action="{{ route('payment.store') }}" method="get">
     @csrf
 
+    <a href="{{ route('payment.store') }}" class="btn btn-primary">Payment</a>
+
     <h4 class="mb-4 text-center">Payment Form</h4>
 
     <div class="mb-3">

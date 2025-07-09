@@ -288,12 +288,10 @@ class Payment extends ActionRequest
         ];
 
         $stringPayload = json_encode($payload);
-        dd($stringPayload);
         $signingKey = $this->GetPrivateKey(config('hbl.MerchantSigningPrivateKey'));
         $encryptingKey = $this->GetPublicKey(config('hbl.PacoEncryptionPublicKey'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
-        dd($body);
 
         // third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
@@ -304,6 +302,8 @@ class Payment extends ActionRequest
             ],
             'body' => $body,
         ]);
+
+        dd($response);
 
         $token = $response->getBody()->getContents();
         $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
