@@ -23,3 +23,5 @@ Homestead.yaml
 Thumbs.db
 
 packages/hbl/vendor
+
+.env
