@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\HblPayment;
+use Anil\Hbl\Payment;
 use Anil\Hbl\PaymentObject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -13,10 +14,10 @@ class PaymentController extends Controller
     {
 
         try {
-            $success_url = config('app.url').'/success';
-            $failed_url = config('app.url').'/failed';
-            $cancel_url = config('app.url').'/cancel';
-            $backend_url = config('app.url').'/backend';
+            $success_url = config('app.url') . '/success';
+            $failed_url = config('app.url') . '/failed';
+            $cancel_url = config('app.url') . '/cancel';
+            $backend_url = config('app.url') . '/backend';
             $order_no = (string) Str::random(15);
             $amount = 100;
 
@@ -30,7 +31,9 @@ class PaymentController extends Controller
             $paymentObj->setCustomFields([
                 'refId' => (string) Str::random(15),
             ]);
-            $response = HblPayment::pay($paymentObj);
+            $payment = new Payment;
+            $joseResponse = $payment->ExecuteFormJose($paymentObj);
+            $response = json_decode($joseResponse);
 
             return redirect($response->response->data->paymentPage->paymentPageURL);
         } catch (\Exception $e) {

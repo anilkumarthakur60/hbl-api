@@ -292,6 +292,7 @@ class Payment extends ActionRequest
         $encryptingKey = $this->GetPublicKey(config('hbl.PacoEncryptionPublicKey'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
+        dd($body);
 
         // third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
