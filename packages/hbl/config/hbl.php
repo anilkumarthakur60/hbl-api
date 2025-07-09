@@ -64,12 +64,12 @@ return [
     /**
      * Merchant's private key used to sign JWS (Base64-encoded PEM).
      */
-    'MerchantSigningPrivateKey' => (string) env('HBL_PRIVATE_KEY_JWS'),
+    'MerchantSigningPrivateKey' => (string) env('HBL_MERCHANT_SIGNING_PRIVATE_KEY'),
 
     /**
      * Merchant's private key used to decrypt JWE responses (Base64-encoded PEM).
      */
-    'MerchantDecryptionPrivateKey' => (string) env('HBL_PRIVATE_KEY_JWE'),
+    'MerchantDecryptionPrivateKey' => (string) env('HBL_MERCHANT_DECRYPTION_PRIVATE_KEY'),
 
     /**
      * PACO's public key used to encrypt requests (JWE).
