@@ -1,0 +1,15 @@
+[09-Jul-2025 06:30:03 UTC] PHP Warning:  require(/home2/gaushalamultiple/anil1.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home2/gaushalamultiple/anil1.com.np/public/index.php on line 14
+[09-Jul-2025 06:30:03 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/gaushalamultiple/anil1.com.np/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/gaushalamultiple/anil1.com.np/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home2/gaushalamultiple/anil1.com.np/public/index.php on line 14
+[09-Jul-2025 06:30:07 UTC] PHP Warning:  require(/home2/gaushalamultiple/anil1.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home2/gaushalamultiple/anil1.com.np/public/index.php on line 14
+[09-Jul-2025 06:30:07 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/gaushalamultiple/anil1.com.np/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/gaushalamultiple/anil1.com.np/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home2/gaushalamultiple/anil1.com.np/public/index.php on line 14
+[09-Jul-2025 06:30:08 UTC] PHP Warning:  require(/home2/gaushalamultiple/anil1.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home2/gaushalamultiple/anil1.com.np/public/index.php on line 14
+[09-Jul-2025 06:30:08 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/gaushalamultiple/anil1.com.np/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/gaushalamultiple/anil1.com.np/public/index.php:14
+Stack trace:
+#0 {main}
+  thrown in /home2/gaushalamultiple/anil1.com.np/public/index.php on line 14
