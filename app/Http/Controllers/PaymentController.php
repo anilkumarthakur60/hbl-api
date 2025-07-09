@@ -30,7 +30,7 @@ class PaymentController extends Controller
         $failed_url = config('app.url').'/failed';
         $cancel_url = config('app.url').'/cancel';
         $backend_url = config('app.url').'/backend';
-        $order_no = (string) Str::uuid();
+        $order_no = (string) Str::random(15);
         $amount = 100;
 
         $paymentObj = new PaymentObject;
@@ -41,7 +41,7 @@ class PaymentController extends Controller
         $paymentObj->setBackendUrl($backend_url);
         $paymentObj->setFailedUrl($failed_url);
         $paymentObj->setCustomFields([
-            'refId' => (string) Str::uuid(),
+            'refId' => (string) Str::random(15),
         ]);
         $response = HblPayment::pay($paymentObj);
 
