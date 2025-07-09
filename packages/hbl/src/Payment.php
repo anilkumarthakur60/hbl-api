@@ -288,6 +288,7 @@ class Payment extends ActionRequest
         ];
 
         $stringPayload = json_encode($payload);
+        dd($stringPayload);
         $signingKey = $this->GetPrivateKey(config('hbl.MerchantSigningPrivateKey'));
         $encryptingKey = $this->GetPublicKey(config('hbl.PacoEncryptionPublicKey'));
 
