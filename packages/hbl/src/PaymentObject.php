@@ -1,15 +1,8 @@
 <?php
 
-declare(strict_types=1);
+namespace Anil\Hbl;
 
-namespace Anil\Hbl\Dto;
-
-/**
- * Data Transfer Object for initiating a payment request.
- *
- * All properties are immutable once the object is constructed.
- */
-final class PaymentDto
+class PaymentObject
 {
     private $order_no;
 

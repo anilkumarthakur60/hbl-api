@@ -38,7 +38,7 @@ use Symfony\Component\Clock\Clock;
 
 abstract class ActionRequest
 {
-    private const PaymentEndpoint = 'https://core.demo-paco.2c2p.com/';
+    private const PaymentEndpoint = 'https://core.demo-paco.2c2p.com';
 
     protected Client $client;
 
@@ -212,9 +212,7 @@ abstract class ActionRequest
         $jws = $this->jwsLoader->loadAndVerifyWithKey($jwe->getPayload(), $signatureVerificationKey, $signature);
 
         $token = $jws->getPayload();
-
         $claims = json_decode($token, true);
-
         $this->claimCheckerManager->check($claims);
 
         return $token;

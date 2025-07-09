@@ -1,0 +1,52 @@
+
+1. First you need to run the sample code in php 8.1 to know the proper flow
+2. Need to deploy/ use the third party JOSE encryption/decryption as per clients php version.
+3. Integrate in live after completion of UAT integration
+
+For testing use the following credentials and attached file.
+(hbldemo.zip password: hbldemo1111)
+
+merchant_id/officeid : 9104137120
+api_key = "65805a1636c74b8e8ac81a991da80be4"
+
+
+----------------------------------------
+Use following test cards for testing:
+----------------------------------------
+card name: SUJAN TEST
+
+5399 3300 0001 2640 
+04/2027
+734
+4101 4900 0005 7763
+09/27
+344
+
+
+
+
+-------------------------------------------
+-------------------------------------------
+FOR PROUDCTION
+-------------------------------------------
+-------------------------------------------
+Merchant key generation:
+-------------------------
+Follow steps on :
+https://uat-paco.s3.ap-southeast-1.amazonaws.com/HTML-based-docs/CorePaymentAPI/2022-04-25-Et01x9/index.html#trueusing-jose-for-message-encryption-and-signing-with-2c2p-paco-api-integration
+
+Provide the public signing and public encryption keys to HBL
+
+Officeid and api_key will be provided by HBL
+
+Use PACO public key for production
+-------------------------------------------
+https://uat-paco.s3.ap-southeast-1.amazonaws.com/HTML-based-docs/CorePaymentAPI/2022-04-25-Et01x9/Keys/2C2P-JOSE-Key-PRD.zip
+password: %p%6Zt773/RpBP8E
+
+
+Encryptionkeyid for production (kid)      
+---------------------------------
+19f84b5655f04e25a99b09f1ee2fac78
+
+Production End point: https://core.paco.2c2p.com

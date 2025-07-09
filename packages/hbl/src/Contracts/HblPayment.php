@@ -2,17 +2,9 @@
 
 namespace Anil\Hbl\Contracts;
 
-use Anil\Hbl\Dto\PaymentDto;
+use Anil\Hbl\PaymentObject;
 
-interface HblPayment
+interface IHblPayment
 {
-    public function createPayment(PaymentDto $paymentDto): PaymentDto;
-
-    public function getPayment(string $paymentId): PaymentDto;
-
-    public function updatePayment(string $paymentId, PaymentDto $paymentDto): PaymentDto;
-
-    public function deletePayment(string $paymentId): void;
-
-    public function getPaymentList(array $data): array;
+    public static function pay(PaymentObject $paymentObject);
 }

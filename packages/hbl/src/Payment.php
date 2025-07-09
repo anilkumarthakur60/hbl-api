@@ -3,6 +3,7 @@
 namespace Anil\Hbl;
 
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Payment extends ActionRequest
@@ -21,7 +22,7 @@ class Payment extends ActionRequest
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
                 'language' => 'en-US',
             ],
-            'officeId' => 'DEMOOFFICE',
+            'officeId' => '9103332177',
             'orderNo' => $orderNo,
             'productDescription' => "desc for '$orderNo'",
             'paymentType' => 'CC',
@@ -34,7 +35,7 @@ class Payment extends ActionRequest
             ],
             'storeCardDetails' => [
                 'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+                'storedCardUniqueID' => $this->Guid(),
             ],
             'installmentPaymentDetails' => [
                 'ippFlag' => 'N',
@@ -87,7 +88,7 @@ class Payment extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Payment/prePaymentUi', [
+        $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -103,7 +104,7 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteJose(): string
+    public function ExecuteJose(PaymentObject $paymentObject): string
     {
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
@@ -137,10 +138,10 @@ class Payment extends ActionRequest
                 'amount' => 1000,
             ],
             'notificationURLs' => [
-                'confirmationURL' => 'http://example-confirmation.com',
-                'failedURL' => 'http://example-failed.com',
-                'cancellationURL' => 'http://example-cancellation.com',
-                'backendURL' => 'http://example-backend.com',
+                'confirmationURL' => $paymentObject->getSuccessUrl(),
+                'failedURL' => $paymentObject->getFailedUrl(),
+                'cancellationURL' => $paymentObject->getCancelUrl(),
+                'backendURL' => $paymentObject->getBackendUrl(),
             ],
             'deviceDetails' => [
                 'browserIp' => '1.0.0.1',
@@ -173,22 +174,23 @@ class Payment extends ActionRequest
 
         $payload = [
             'request' => $request,
-            'iss' => SecurityData::$AccessToken,
+            'iss' => config('hbl.AccessToken'),
             'aud' => 'PacoAudience',
-            'CompanyApiKey' => SecurityData::$AccessToken,
+            'CompanyApiKey' => config('hbl.AccessToken'),
             'iat' => $now->unix(),
             'nbf' => $now->unix(),
             'exp' => $now->addHour()->unix(),
         ];
 
+        dd(12);
         $stringPayload = json_encode($payload);
-        $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-        $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+        $signingKey = $this->GetPrivateKey(config('hbl.MerchantSigningPrivateKey'));
+        $encryptingKey = $this->GetPublicKey(config('hbl.PacoEncryptionPublicKey'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Payment/prePaymentUi', [
+        $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -198,8 +200,8 @@ class Payment extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-        $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }
@@ -208,10 +210,9 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url): string
+    public function ExecuteFormJose(PaymentObject $paymentObject): string
     {
         $now = Carbon::now();
-        $orderNo = $now->getPreciseTimestamp(3);
 
         $request = [
             'apiRequest' => [
@@ -219,14 +220,14 @@ class Payment extends ActionRequest
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
                 'language' => 'en-US',
             ],
-            'officeId' => $mid,
-            'orderNo' => $orderNo,
-            'productDescription' => "desc for '$orderNo'",
+            'officeId' => config('hbl.OfficeId'),
+            'orderNo' => $paymentObject->getOrderNo(),
+            'productDescription' => "desc for '{$paymentObject->getOrderNo()}'",
             'paymentType' => 'CC',
             'paymentCategory' => 'ECOM',
             'storeCardDetails' => [
                 'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+                'storedCardUniqueID' => $this->Guid(),
             ],
             'installmentPaymentDetails' => [
                 'ippFlag' => 'N',
@@ -234,18 +235,18 @@ class Payment extends ActionRequest
                 'interestType' => null,
             ],
             'mcpFlag' => 'N',
-            'request3dsFlag' => $threeD,
+            'request3dsFlag' => config('hbl.Input3DS'),
             'transactionAmount' => [
-                'amountText' => str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT),
-                'currencyCode' => $curr,
+                'amountText' => str_pad((($paymentObject->getAmount() ?? 0) * 100), 12, '0', STR_PAD_LEFT),
+                'currencyCode' => config('hbl.InputCurrency'),
                 'decimalPlaces' => 2,
-                'amount' => $amt,
+                'amount' => $paymentObject->getAmount(),
             ],
             'notificationURLs' => [
-                'confirmationURL' => $success_url,
-                'failedURL' => $failed_url,
-                'cancellationURL' => $cancel_url,
-                'backendURL' => $backend_url,
+                'confirmationURL' => $paymentObject->getSuccessUrl(),
+                'failedURL' => $paymentObject->getFailedUrl(),
+                'cancellationURL' => $paymentObject->getCancelUrl(),
+                'backendURL' => $paymentObject->getBackendUrl(),
             ],
             'deviceDetails' => [
                 'browserIp' => '1.0.0.1',
@@ -259,10 +260,10 @@ class Payment extends ActionRequest
                     'referenceNo' => '2322460376026',
                     'purchaseItemDescription' => 'Bundled insurance',
                     'purchaseItemPrice' => [
-                        'amountText' => '000000000100',
+                        'amountText' => '100',
                         'currencyCode' => 'NPR',
                         'decimalPlaces' => 2,
-                        'amount' => 1,
+                        'amount' => 100,
                     ],
                     'subMerchantID' => 'string',
                     'passengerSeqNo' => 1,
@@ -278,22 +279,22 @@ class Payment extends ActionRequest
 
         $payload = [
             'request' => $request,
-            'iss' => $api_key,
+            'iss' => config('hbl.AccessToken'),
             'aud' => 'PacoAudience',
-            'CompanyApiKey' => $api_key,
+            'CompanyApiKey' => config('hbl.AccessToken'),
             'iat' => $now->unix(),
             'nbf' => $now->unix(),
             'exp' => $now->addHour()->unix(),
         ];
 
         $stringPayload = json_encode($payload);
-        $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-        $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+        $signingKey = $this->GetPrivateKey(config('hbl.MerchantSigningPrivateKey'));
+        $encryptingKey = $this->GetPublicKey(config('hbl.PacoEncryptionPublicKey'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Payment/prePaymentUi', [
+        $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -303,8 +304,8 @@ class Payment extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-        $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }
