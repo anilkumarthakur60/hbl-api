@@ -303,11 +303,11 @@ class Payment extends ActionRequest
             'body' => $body,
         ]);
 
-        dd($response);
 
         $token = $response->getBody()->getContents();
         $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
         $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
+        dd($token);
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

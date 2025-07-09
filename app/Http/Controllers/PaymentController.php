@@ -13,10 +13,10 @@ class PaymentController extends Controller
     {
 
         try {
-            $success_url = config('app.url').'/success';
-            $failed_url = config('app.url').'/failed';
-            $cancel_url = config('app.url').'/cancel';
-            $backend_url = config('app.url').'/backend';
+            $success_url = config('app.url') . '/success';
+            $failed_url = config('app.url') . '/failed';
+            $cancel_url = config('app.url') . '/cancel';
+            $backend_url = config('app.url') . '/backend';
             $order_no = (string) Str::random(15);
             $amount = 100;
 
@@ -34,7 +34,7 @@ class PaymentController extends Controller
             $joseResponse = $payment->ExecuteFormJose($paymentObj);
             $response = json_decode($joseResponse);
 
-            return redirect($response->response->data->paymentPage->paymentPageURL);
+            return redirect()->away($response->response->data->paymentPage->paymentPageURL);
         } catch (\Exception $e) {
             dd($e);
         }
