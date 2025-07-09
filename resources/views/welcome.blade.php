@@ -48,10 +48,10 @@
     }
 </style>
 
-<form id="payment_form" action="{{ route('front.payment.store') }}" method="POST">
+<form id="payment_form" action="{{ route('payment.store') }}" method="get">
     @csrf
 
-    <h4 class="mb-4 text-center">Secure Payment Form</h4>
+    <h4 class="mb-4 text-center">Payment Form</h4>
 
     <div class="mb-3">
         <label for="amount" class="form-label">Amount to Pay (NPR):</label>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="mb-3">
-        <label for="price" class="form-label">Total Amount (incl. 4% bank charge):</label>
+        <label for="price" class="form-label">Total Amount:</label>
         <input type="number" value="104" required name="price" class="form-control" id="price" readonly>
     </div>
 
@@ -70,12 +70,12 @@
 
     <div class="mb-3">
         <label for="fullname" class="form-label">Full Name:</label>
-        <input name="fullname" value="Bicky Raj" required type="text" id="fullname" class="form-control" placeholder="Your full name">
+        <input name="fullname" value="Test Name" required type="text" id="fullname" class="form-control" placeholder="Your full name">
     </div>
 
     <div class="mb-3">
         <label for="email" class="form-label">Email Address:</label>
-        <input type="email" name="email" value="bickyraj@gmail.com" class="form-control" id="email" placeholder="you@example.com">
+        <input type="email" name="email" value="test@gmail.com" class="form-control" id="email" placeholder="you@example.com">
     </div>
 
     <div class="mb-3">
