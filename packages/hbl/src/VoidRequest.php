@@ -33,7 +33,7 @@ class VoidRequest extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Void', [
+        $response = $this->client->post('api/2.0/Void', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -87,7 +87,7 @@ class VoidRequest extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Void', [
+        $response = $this->client->post('api/2.0/Void', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,

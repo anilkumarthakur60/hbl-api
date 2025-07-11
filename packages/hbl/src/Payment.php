@@ -87,7 +87,7 @@ class Payment extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Payment/prePaymentUi', [
+        $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -188,7 +188,7 @@ class Payment extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Payment/prePaymentUi', [
+        $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -293,7 +293,7 @@ class Payment extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Payment/prePaymentUi', [
+        $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,

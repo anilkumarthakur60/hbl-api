@@ -22,31 +22,33 @@ class PaymentController extends Controller
             $order_no = (string) Str::random(15);
             $amount = 100;
 
-            $paymentObj = new PaymentObject;
-            $paymentObj->setOrderNo($order_no);
-            $paymentObj->setAmount($amount);
-            $paymentObj->setSuccessUrl($success_url);
-            $paymentObj->setCancelUrl($cancel_url);
-            $paymentObj->setBackendUrl($backend_url);
-            $paymentObj->setFailedUrl($failed_url);
-            $paymentObj->setCustomFields([
-                'refId' => (string) Str::random(15),
-            ]);
+            $paymentObj = new PaymentObject(
+                orderNo: $order_no,
+                amount: $amount,
+                successUrl: $success_url,
+                failedUrl: $failed_url,
+                cancelUrl: $cancel_url,
+                backendUrl: $backend_url,
+                customFields: [
+                    'refId' => (string) Str::random(15),
+                ]
+            );
+
             $payment = new Payment;
             $joseResponse = $payment->ExecuteFormJose(
                 mid: SecurityData::$MerchantId,
                 api_key: SecurityData::$AccessToken,
                 curr: 'NPR',
-                amt: $paymentObj->getAmount(),
+                amt: $paymentObj->amount,
                 threeD: 'Y',
-                success_url: $paymentObj->getSuccessUrl(),
-                failed_url: $paymentObj->getFailedUrl(),
-                cancel_url: $paymentObj->getCancelUrl(),
-                backend_url: $paymentObj->getBackendUrl(),
+                success_url: $paymentObj->successUrl,
+                failed_url: $paymentObj->failedUrl,
+                cancel_url: $paymentObj->cancelUrl,
+                backend_url: $paymentObj->backendUrl,
             );
             $response = json_decode($joseResponse);
 
-            return redirect()->away($response->response->Data->paymentPage->paymentPageURL);
+            return redirect()->away($response->response->data->paymentPage->paymentPageURL);
         } catch (\Exception $e) {
             Log::error($e);
             dd($e);

@@ -33,7 +33,7 @@ class Settlement extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->put('api/1.0/Settlement', [
+        $response = $this->client->put('api/2.0/Settlement', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -87,7 +87,7 @@ class Settlement extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->put('api/1.0/Settlement', [
+        $response = $this->client->put('api/2.0/Settlement', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,

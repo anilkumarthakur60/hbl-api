@@ -41,7 +41,7 @@ class Refund extends ActionRequest
         echo $stringRequest;
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Refund/refund', [
+        $response = $this->client->post('api/2.0/Refund/refund', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -101,7 +101,7 @@ class Refund extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Refund/refund', [
+        $response = $this->client->post('api/2.0/Refund/refund', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
