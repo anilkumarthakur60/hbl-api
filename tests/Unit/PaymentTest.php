@@ -124,18 +124,14 @@ use Illuminate\Support\Facades\Http;
 //         backend_url: $this->backendUrl,
 //     ))->toThrow(Exception::class);
 // });
-
 beforeEach(function () {
     $this->merchantId = config('hbl.OfficeId');
     $this->apiKey = config('hbl.AccessToken');
     $this->baseUrl = config('hbl.EndPoint');
-
     if (! $this->merchantId || ! $this->apiKey || ! $this->baseUrl) {
         throw new Exception('HBL integration credentials or URL not configured in .env');
     }
-
     $this->payment = new Payment;
-
     $appUrl = rtrim(config('app.url'), '/');
     $this->successUrl = "{$appUrl}/success";
     $this->failedUrl = "{$appUrl}/failed";
@@ -155,36 +151,120 @@ it('actually hits the HBL sandbox and returns a well-formed response', function 
         cancel_url: $this->cancelUrl,
         backend_url: $this->backendUrl,
     );
+    $object = json_decode($json);
 
-    // 1) We got some JSON back
-    expect($json)->toBeString();
+    // root / data sanity
+    expect($object)->toBeObject();
+    expect($object->response)->toBeObject();
+    expect($object->response->data)->toBeObject();
 
-    $response = json_decode($json);
-    expect(json_last_error())->toBe(JSON_ERROR_NONE);
-    expect($response)->toBeObject();
+    // pull out the two main bits
+    $result = $object->response->data->paymentIncompleteResult;
+    $page = $object->response->data->paymentPage;
+    $api = $object->response->apiResponse;
 
-    // 2) paymentIncompleteResult shape
-    expect($response)->toHaveProperty('paymentIncompleteResult');
-    $pi = $response->paymentIncompleteResult;
-    expect($pi)->toBeObject();
-    expect($pi)->toHaveProperty('orderNo')->not->toBeEmpty();
-    expect($pi)->toHaveProperty('transactionDateTime')
-        ->toMatch('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/');
-    expect($pi)->toHaveProperty('availablePaymentTypes')
-        ->toBeArray()
-        ->not->toBeEmpty();
+    // ─── paymentIncompleteResult ───────────────────────────────────────────
+    expect($result)->toBeObject();
+    expect($result->notificationURLs)->toBeObject();
+    expect($result->notificationURLs->confirmationUrl)->toBeString();
+    expect($result->notificationURLs->cancellationUrl)->toBeString();
+    expect($result->notificationURLs->failedUrl)->toBeString();
+    expect($result->notificationURLs->backendUrl)->toBeString();
 
-    // 3) paymentPage shape
-    expect($response)->toHaveProperty('paymentPage');
-    $pp = $response->paymentPage;
-    expect($pp)->toHaveProperty('paymentPageURL')
-        ->toStartWith($this->baseUrl);
-    expect($pp)->toHaveProperty('validTillDateTime')
-        ->toMatch('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/');
+    expect($result->availablePaymentTypes)->toBeArray();
+    foreach (['CC', 'CC-VI', 'CC-CA', 'CC-AX', 'CC-UP'] as $type) {
+        expect($result->availablePaymentTypes)->toContain($type);
+    }
 
-    // 4) apiResponse shape
-    expect($response)->toHaveProperty('apiResponse');
-    $ar = $response->apiResponse;
-    expect($ar)->toHaveProperty('responseCode')->not->toBeEmpty();
-    expect($ar)->toHaveProperty('responseDescription')->not->toBeEmpty();
+    // status info
+    expect($result->paymentStatusInfo)->toBeObject();
+    expect($result->paymentStatusInfo->paymentStatus)->toBeString();
+    expect($result->paymentStatusInfo->paymentStep)->toBeString();
+    expect($result->paymentStatusInfo->lastUpdatedDateTime)->toBeString();
+
+    // core fields
+    expect($result->orderNo)->toBeString();
+    expect($result->productDescription)->toBeString();
+    expect($result->paymentExpiryDateTime)->toBeString();
+    expect($result->currencyConversionType)->toBeString();
+
+    // amount
+    expect($result->transactionAmount)->toBeObject();
+    expect($result->transactionAmount->amount)->toBeFloat();
+    expect($result->transactionAmount->currencyCode)->toBeString();
+    expect($result->transactionAmount->decimalPlaces)->toBeInt();
+    expect($result->transactionAmount->amountText)->toBeString();
+
+    // ─── paymentPage ───────────────────────────────────────────────────────
+    expect($page)->toBeObject();
+    expect($page->paymentPageURL)->toBeString();
+    expect($page->validTillDateTime)->toBeString();
+
+    // ─── apiResponse ───────────────────────────────────────────────────────
+    expect($api->responseMessageId)->toBeString();
+    expect($api->responseToRequestMessageId)->toBeString();
+    expect($api->responseCode)->toBeString();
+    expect($api->responseDescription)->toBeString();
+    expect($api->responseDateTime)->toBeString();
+    expect($api->responseTime)->toBeInt();
+    expect($api->marketingDescription)->toBeString();
+
+    // these three may be string or null
+    expect(is_string($api->acquirerResponseCode) || is_null($api->acquirerResponseCode))->toBeTrue();
+    expect(is_string($api->acquirerResponseDescription) || is_null($api->acquirerResponseDescription))->toBeTrue();
+    expect(is_string($api->eciValue) || is_null($api->eciValue))->toBeTrue();
+
+    // ─── JWT Claims ────────────────────────────────────────────────────────
+    expect($object->aud)->toBeString();
+    expect($object->iss)->toBeString();
+    expect($object->exp)->toBeInt();
+    expect($object->iat)->toBeInt();
+    expect($object->nbf)->toBeInt();
+
+    // ─── OPTIONAL / NULLABLE FIELDS IN paymentIncompleteResult ────────────
+    foreach (
+        [
+            // string|null fields
+            'channelCode',
+            'agentCode',
+            'currencyConversionMerchantId',
+            'aresACSChallenge',
+            'failedReason',
+            'invoiceNo2C2P',
+            'pspInvoiceNo',
+            'pspReferenceNo',
+            'settlementAmount',
+            'ddcId',
+            'clientIp',
+            // array|null fields
+            'untokenizedStoredCardList',
+            'preferredPaymentTypes',
+            'customFieldList',
+            // userDefined1–10 (string|null)
+            'userDefined1',
+            'userDefined2',
+            'userDefined3',
+            'userDefined4',
+            'userDefined5',
+            'userDefined6',
+            'userDefined7',
+            'userDefined8',
+            'userDefined9',
+            'userDefined10',
+        ] as $field
+    ) {
+        $val = $result->{$field};
+        if (in_array($field, [
+            'untokenizedStoredCardList',
+            'preferredPaymentTypes',
+            'customFieldList',
+        ])) {
+            expect(is_array($val) || is_null($val))->toBeTrue();
+        } else {
+            expect(is_string($val) || is_null($val))->toBeTrue();
+        }
+    }
+
+    // officeId must always be string
+    expect($result->officeId)->toBeString();
 });
