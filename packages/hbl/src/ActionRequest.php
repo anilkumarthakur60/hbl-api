@@ -19,7 +19,6 @@ use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128CBCHS256;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP;
-use Jose\Component\Encryption\Compression\CompressionMethodManager;
 use Jose\Component\Encryption\JWEBuilder;
 use Jose\Component\Encryption\JWEDecrypter;
 use Jose\Component\Encryption\JWELoader;
@@ -34,8 +33,8 @@ use Jose\Component\Signature\JWSTokenSupport;
 use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer as JWSCompactSerializer;
 use Jose\Component\Signature\Serializer\JWSSerializerManager;
-use Jose\Easy\ContentEncryptionAlgorithmChecker;
 use Psr\Http\Message\RequestInterface;
+use Symfony\Component\Clock\NativeClock;
 
 abstract class ActionRequest
 {
@@ -73,11 +72,9 @@ abstract class ActionRequest
 
         $this->jwsCompactSerializer = new JWSCompactSerializer;
         $this->jwsBuilder = new JWSBuilder(
-            signatureAlgorithmManager: new AlgorithmManager(
-                algorithms: [
-                    new PS256,
-                ]
-            )
+            new AlgorithmManager([
+                new PS256,
+            ])
         );
         $this->jwsLoader = new JWSLoader(
             serializerManager: new JWSSerializerManager(
@@ -86,11 +83,9 @@ abstract class ActionRequest
                 ]
             ),
             jwsVerifier: new JWSVerifier(
-                signatureAlgorithmManager: new AlgorithmManager(
-                    algorithms: [
-                        new PS256,
-                    ]
-                )
+                new AlgorithmManager([
+                    new PS256,
+                ])
             ),
             headerCheckerManager: new HeaderCheckerManager(
                 checkers: [
@@ -106,8 +101,8 @@ abstract class ActionRequest
         );
         $this->claimCheckerManager = new ClaimCheckerManager(
             checkers: [
-                new NotBeforeChecker,
-                new ExpirationTimeChecker,
+                new NotBeforeChecker(new NativeClock, 0, true),
+                new ExpirationTimeChecker(new NativeClock, 0, true),
                 new AudienceChecker(SecurityData::$AccessToken),
                 new IssuerChecker(['PacoIssuer']),
             ]
@@ -115,19 +110,10 @@ abstract class ActionRequest
 
         $this->jweCompactSerializer = new JWECompactSerializer;
         $this->jweBuilder = new JWEBuilder(
-            keyEncryptionAlgorithmManager: new AlgorithmManager(
-                algorithms: [
-                    new RSAOAEP,
-                ]
-            ),
-            contentEncryptionAlgorithmManager: new AlgorithmManager(
-                algorithms: [
-                    new A128CBCHS256,
-                ]
-            ),
-            compressionManager: new CompressionMethodManager(
-                methods: []
-            )
+            new AlgorithmManager([
+                new RSAOAEP,
+                new A128CBCHS256,
+            ])
         );
         $this->jweLoader = new JWELoader(
             serializerManager: new JWESerializerManager(
@@ -136,28 +122,15 @@ abstract class ActionRequest
                 ]
             ),
             jweDecrypter: new JWEDecrypter(
-                keyEncryptionAlgorithmManager: new AlgorithmManager(
-                    algorithms: [
-                        new RSAOAEP,
-                    ]
-                ),
-                contentEncryptionAlgorithmManager: new AlgorithmManager(
-                    algorithms: [
-                        new A128CBCHS256,
-                    ]
-                ),
-                compressionMethodManager: new CompressionMethodManager(
-                    methods: [],
-                )
+                new AlgorithmManager([
+                    new RSAOAEP,
+                    new A128CBCHS256,
+                ])
             ),
             headerCheckerManager: new HeaderCheckerManager(
                 checkers: [
                     new AlgorithmChecker(
                         supportedAlgorithms: [SecurityData::$JWEAlgorithm],
-                        protectedHeader: true
-                    ),
-                    new ContentEncryptionAlgorithmChecker(
-                        supportedAlgorithms: [SecurityData::$JWEEncrptionAlgorithm],
                         protectedHeader: true
                     ),
                 ],
@@ -209,7 +182,7 @@ abstract class ActionRequest
             ->withPayload($this->jwsCompactSerializer->serialize($jws))
             ->withSharedProtectedHeader([
                 'alg' => SecurityData::$JWEAlgorithm,
-                'enc' => SecurityData::$JWEEncrptionAlgorithm,
+                'enc' => SecurityData::$JWEEncryptionAlgorithm,
                 'kid' => SecurityData::$EncryptionKeyId,
                 'typ' => SecurityData::$TokenType,
             ])

@@ -4,6 +4,8 @@ namespace Anil\Hbl;
 
 class SecurityData
 {
+    public static string $MerchantId = '9104137120';
+
     /**
      * JWE Key Id.
      */
@@ -35,7 +37,7 @@ class SecurityData
      * JWE (JSON Web Encryption) Content Encryption Algorithm - This parameter identifies the content encryption
      * algorithm used on the plaintext to produce the encrypted ciphertext.
      */
-    public static string $JWEEncrptionAlgorithm = 'A128CBC-HS256';
+    public static string $JWEEncryptionAlgorithm = 'A128CBC-HS256';
 
     /**
      * Merchant Signing Private Key is used to cryptographically sign and create the request JWS.
