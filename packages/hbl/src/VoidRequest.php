@@ -4,8 +4,6 @@ namespace Anil\Hbl;
 
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
-use Anil\Hbl\ActionRequest;
-use Anil\Hbl\SecurityData;
 
 class VoidRequest extends ActionRequest
 {
@@ -14,34 +12,34 @@ class VoidRequest extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = "DEMOOFFICE";
-        $orderNo = "1643362945102"; //OrderNo can be Refund/Void one time only
-        $productDescription = "Sample request for 1643362945102";
+        $officeId = 'DEMOOFFICE';
+        $orderNo = '1643362945102'; // OrderNo can be Refund/Void one time only
+        $productDescription = 'Sample request for 1643362945102';
 
         $request = [
-            "officeId" => $officeId,
-            "orderNo" => $orderNo,
-            "productDescription" => $productDescription,
-            "issuerApprovalCode" => "140331", // approvalCode of order place (Payment api) response
-            "actionBy" => "System",
-            "voidAmount" => [
-                "amountText" => "000000100000",
-                "currencyCode" => "THB",
-                "decimalPlaces" => 2,
-                "amount" => 1000.00
+            'officeId' => $officeId,
+            'orderNo' => $orderNo,
+            'productDescription' => $productDescription,
+            'issuerApprovalCode' => '140331', // approvalCode of order place (Payment api) response
+            'actionBy' => 'System',
+            'voidAmount' => [
+                'amountText' => '000000100000',
+                'currencyCode' => 'THB',
+                'decimalPlaces' => 2,
+                'amount' => 1000.00,
             ],
         ];
 
         $stringRequest = json_encode($request);
 
-        //third-party http client https://github.com/guzzle/guzzle
+        // third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/1.0/Void', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/json; charset=utf-8'
+                'Content-Type' => 'application/json; charset=utf-8',
             ],
-            'body' => $stringRequest
+            'body' => $stringRequest,
         ]);
 
         return $response->getBody()->getContents();
@@ -54,32 +52,32 @@ class VoidRequest extends ActionRequest
     public function ExecuteJose(): string
     {
         $now = Carbon::now();
-        $officeId = "DEMOOFFICE";
-        $orderNo = "1643362945102"; //OrderNo can be Refund/Void one time only
-        $productDescription = "Sample request for 1643362945102";
+        $officeId = 'DEMOOFFICE';
+        $orderNo = '1643362945102'; // OrderNo can be Refund/Void one time only
+        $productDescription = 'Sample request for 1643362945102';
 
         $request = [
-            "officeId" => $officeId,
-            "orderNo" => $orderNo,
-            "productDescription" => $productDescription,
-            "issuerApprovalCode" => "140331", // approvalCode of order place (Payment api) response
-            "actionBy" => "System",
-            "voidAmount" => [
-                "amountText" => "000000100000",
-                "currencyCode" => "THB",
-                "decimalPlaces" => 2,
-                "amount" => 1000.00
+            'officeId' => $officeId,
+            'orderNo' => $orderNo,
+            'productDescription' => $productDescription,
+            'issuerApprovalCode' => '140331', // approvalCode of order place (Payment api) response
+            'actionBy' => 'System',
+            'voidAmount' => [
+                'amountText' => '000000100000',
+                'currencyCode' => 'THB',
+                'decimalPlaces' => 2,
+                'amount' => 1000.00,
             ],
         ];
 
         $payload = [
-            "request" => $request,
-            "iss" => SecurityData::$AccessToken,
-            "aud" => "PacoAudience",
-            "CompanyApiKey" => SecurityData::$AccessToken,
-            "iat" => $now->unix(),
-            "nbf" => $now->unix(),
-            "exp" => $now->addHour()->unix(),
+            'request' => $request,
+            'iss' => SecurityData::$AccessToken,
+            'aud' => 'PacoAudience',
+            'CompanyApiKey' => SecurityData::$AccessToken,
+            'iat' => $now->unix(),
+            'nbf' => $now->unix(),
+            'exp' => $now->addHour()->unix(),
         ];
 
         $stringPayload = json_encode($payload);
@@ -88,14 +86,14 @@ class VoidRequest extends ActionRequest
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
-        //third-party http client https://github.com/guzzle/guzzle
+        // third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/1.0/Void', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/jose; charset=utf-8'
+                'Content-Type' => 'application/jose; charset=utf-8',
             ],
-            'body' => $body
+            'body' => $body,
         ]);
 
         $token = $response->getBody()->getContents();
