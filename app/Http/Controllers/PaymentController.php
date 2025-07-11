@@ -13,10 +13,10 @@ class PaymentController extends Controller
     {
 
         try {
-            $success_url = config('app.url').'/success';
-            $failed_url = config('app.url').'/failed';
-            $cancel_url = config('app.url').'/cancel';
-            $backend_url = config('app.url').'/backend';
+            $success_url = config('app.url') . '/success';
+            $failed_url = config('app.url') . '/failed';
+            $cancel_url = config('app.url') . '/cancel';
+            $backend_url = config('app.url') . '/backend';
             $amount = 100;
 
             $payment = new Payment;
@@ -31,7 +31,6 @@ class PaymentController extends Controller
                 cancel_url: $cancel_url,
                 backend_url: $backend_url,
             );
-            dd($joseResponse);
             $response = json_decode($joseResponse);
 
             return redirect()->away($response->response->data->paymentPage->paymentPageURL);
