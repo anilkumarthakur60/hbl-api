@@ -26,7 +26,7 @@ class PaymentController extends Controller
                 api_key: SecurityData::$AccessToken,
                 curr: 'NPR',
                 amt: $amount,
-                threeD: 'Y',
+                threeD: 'N',
                 success_url: $success_url,
                 failed_url: $failed_url,
                 cancel_url: $cancel_url,

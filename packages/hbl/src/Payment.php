@@ -2,7 +2,8 @@
 
 namespace Anil\Hbl;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Payment extends ActionRequest
@@ -214,7 +215,7 @@ class Payment extends ActionRequest
         $orderNo = $now->getPreciseTimestamp(3);
 
         $custom_fields = [];
-        if (isset($additional_data) && !empty($additional_data)) {
+        if (!empty($additional_data)) {
             foreach ($additional_data as $key => $value) {
                 $custom_fields[] = [
                     "fieldName" => $key,
