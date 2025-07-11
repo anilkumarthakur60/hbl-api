@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
-use Anil\Hbl\PaymentObject;
 use Anil\Hbl\SecurityData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -19,33 +17,21 @@ class PaymentController extends Controller
             $failed_url = config('app.url').'/failed';
             $cancel_url = config('app.url').'/cancel';
             $backend_url = config('app.url').'/backend';
-            $order_no = (string) Str::random(15);
             $amount = 100;
 
-            $paymentObj = new PaymentObject(
-                orderNo: $order_no,
-                amount: $amount,
-                successUrl: $success_url,
-                failedUrl: $failed_url,
-                cancelUrl: $cancel_url,
-                backendUrl: $backend_url,
-                customFields: [
-                    'refId' => (string) Str::random(15),
-                ]
-            );
-
             $payment = new Payment;
-            $joseResponse = $payment->ExecuteFormJose(
+            $joseResponse = $payment->executeFormJose(
                 mid: SecurityData::$MerchantId,
                 api_key: SecurityData::$AccessToken,
                 curr: 'NPR',
-                amt: $paymentObj->amount,
+                amt: $amount,
                 threeD: 'Y',
-                success_url: $paymentObj->successUrl,
-                failed_url: $paymentObj->failedUrl,
-                cancel_url: $paymentObj->cancelUrl,
-                backend_url: $paymentObj->backendUrl,
+                success_url: $success_url,
+                failed_url: $failed_url,
+                cancel_url: $cancel_url,
+                backend_url: $backend_url,
             );
+            dd($joseResponse);
             $response = json_decode($joseResponse);
 
             return redirect()->away($response->response->data->paymentPage->paymentPageURL);

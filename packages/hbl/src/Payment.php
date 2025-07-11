@@ -208,7 +208,7 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url): string
+    public function executeFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url): string
     {
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
