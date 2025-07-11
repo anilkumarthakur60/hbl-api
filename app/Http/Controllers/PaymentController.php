@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
 use Anil\Hbl\SecurityData;
+use App\Models\HblResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -17,7 +18,7 @@ class PaymentController extends Controller
             $failed_url = config('app.url') . '/failed';
             $cancel_url = config('app.url') . '/cancel';
             $backend_url = config('app.url') . '/backend';
-            $amount = 100;
+            $amount = $request->amount ?? 1000;
 
             $payment = new Payment;
             $joseResponse = $payment->executeFormJose(
@@ -42,21 +43,60 @@ class PaymentController extends Controller
 
     public function success(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'success',
+        ]);
+        $responses = HblResponse::all();
+
+        return view('payment.index', compact('responses'));
     }
 
     public function failed(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'failed',
+        ]);
+
+        $responses = HblResponse::all();
+        return view('payment.index', compact('responses'));
     }
 
     public function cancel(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'cancel',
+        ]);
+
+        $responses = HblResponse::all();
+        return view('payment.index', compact('responses'));
     }
 
     public function backend(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'backend',
+        ]);
+
+        $responses = HblResponse::all();
+        return view('payment.index', compact('responses'));
+    }
+
+    public function index()
+    {
+        $responses = HblResponse::all();
+
+        return view('payment.index', compact('responses'));
     }
 }

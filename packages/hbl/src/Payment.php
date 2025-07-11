@@ -208,10 +208,20 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function executeFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url): string
+    public function executeFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url, $additional_data = []): string
     {
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
+
+        $custom_fields = [];
+        if (isset($additional_data) && !empty($additional_data)) {
+            foreach ($additional_data as $key => $value) {
+                $custom_fields[] = [
+                    "fieldName" => $key,
+                    "fieldValue" => $value
+                ];
+            }
+        }
 
         $request = [
             'apiRequest' => [
@@ -270,8 +280,20 @@ class Payment extends ActionRequest
             ],
             'customFieldList' => [
                 [
-                    'fieldName' => 'TestField',
-                    'fieldValue' => 'This is test',
+                    'fieldName' => 'fullname',
+                    'fieldValue' => 'Anil',
+                ],
+                [
+                    'fieldName' => 'email',
+                    'fieldValue' => 'anil@gmail.com',
+                ],
+                [
+                    'fieldName' => 'contact_number',
+                    'fieldValue' => '9800000000',
+                ],
+                [
+                    'fieldName' => 'amount',
+                    'fieldValue' => '1000',
                 ],
             ],
         ];

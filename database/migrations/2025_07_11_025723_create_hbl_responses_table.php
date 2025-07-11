@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('hbl_responses', function (Blueprint $table) {
             $table->id();
+            $table->string('order_no');
             $table->json('response');
             $table->string('status');
             $table->timestamps();
