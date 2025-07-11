@@ -97,4 +97,11 @@ return [
      * Use "Y" for production, "N" for development/testing.
      */
     'Input3DS' => (string) env('HBL_INPUT_3DS', 'N'),
+
+    'payment_jose_redirect_url' => [
+        'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS'),
+        'failed' => (string) env('HBL_JOSE_REDIRECT_URL_FAILED'),
+        'cancel' => (string) env('HBL_JOSE_REDIRECT_URL_CANCEL'),
+        'backend' => (string) env('HBL_JOSE_REDIRECT_URL_BACKEND'),
+    ],
 ];
