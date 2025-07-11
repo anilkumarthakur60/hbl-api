@@ -155,7 +155,6 @@ it('actually hits the HBL sandbox and returns a well-formed response', function 
         cancel_url: $this->cancelUrl,
         backend_url: $this->backendUrl,
     );
-    dd($json);
 
     // 1) We got some JSON back
     expect($json)->toBeString();
