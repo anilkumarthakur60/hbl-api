@@ -106,6 +106,7 @@
                                 <th scope="col">ID</th>
                                 <th scope="col">Response</th>
                                 <th scope="col">Status</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,6 +117,9 @@
                                     <pre class="mb-0">{{ json_encode($response->response, JSON_PRETTY_PRINT) }}</pre>
                                 </td>
                                 <td>{{ $response->status }}</td>
+                                <td>
+                                    <a href="{{ route('payment.status', $response->order_no) }}" target="_blank" class="btn btn-primary">Check Status</a>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>

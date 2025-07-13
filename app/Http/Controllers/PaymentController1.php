@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
 use Anil\Hbl\SecurityData;
-use Anil\Hbl\TransactionStatus;
 use App\Models\HblResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class PaymentController extends Controller
+class PaymentController1 extends Controller
 {
     public function store(Request $request)
     {
@@ -22,7 +21,7 @@ class PaymentController extends Controller
             $amount = $request->amount ?? 1000;
 
             $payment = new Payment;
-            $joseResponse = $payment->executeFormJose(
+            $joseResponse = $payment->ExecuteFormJose(
                 mid: SecurityData::$MerchantId,
                 api_key: SecurityData::$AccessToken,
                 curr: 'NPR',
@@ -99,13 +98,5 @@ class PaymentController extends Controller
         $responses = HblResponse::all();
 
         return view('payment.index', compact('responses'));
-    }
-
-    public function status($orderNo)
-    {
-        $hbl = new TransactionStatus();
-        $response = $hbl->Execute($orderNo);
-        $response = json_decode($response);
-        return response()->json($response);
     }
 }
