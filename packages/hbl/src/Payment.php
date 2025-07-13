@@ -11,7 +11,7 @@ class Payment extends ActionRequest
     /**
      * @throws GuzzleException
      */
-    public function Execute(): string
+    public function Execute($orderNo = null): string
     {
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
@@ -22,7 +22,7 @@ class Payment extends ActionRequest
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
                 'language' => 'en-US',
             ],
-            'officeId' => 9104137120,
+            'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
             'productDescription' => "desc for '$orderNo'",
             'paymentType' => 'CC',
@@ -209,14 +209,13 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function executeFormJose($amt, $additional_data = []): string
+    public function executeFormJose($amt, $orderNo, $additionalData = []): string
     {
         $now = Carbon::now();
-        $orderNo = $now->getPreciseTimestamp(3);
 
         $custom_fields = [];
-        if (! empty($additional_data)) {
-            foreach ($additional_data as $key => $value) {
+        if (! empty($additionalData)) {
+            foreach ($additionalData as $key => $value) {
                 $custom_fields[] = [
                     'fieldName' => $key,
                     'fieldValue' => $value,
@@ -298,7 +297,6 @@ class Payment extends ActionRequest
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
-        // third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',

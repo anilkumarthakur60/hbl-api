@@ -12,12 +12,11 @@ class Settlement extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = 9104137120;
         $orderNo = '1643362945100'; // OrderNo can be Refund/Void one time
         $productDescription = 'Sample request for 1643362945100';
 
         $request = [
-            'officeId' => $officeId,
+            'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
             'productDescription' => $productDescription,
             'issuerApprovalCode' => '141857', // approvalCode of order place (Payment api) response
