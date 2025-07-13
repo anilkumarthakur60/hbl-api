@@ -12,7 +12,7 @@ class Settlement extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100'; // OrderNo can be Refund/Void one time
         $productDescription = 'Sample request for 1643362945100';
 
@@ -52,7 +52,7 @@ class Settlement extends ActionRequest
     public function ExecuteJose(): string
     {
         $now = Carbon::now();
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100';
         $productDescription = 'Sample request for 1643362945100';
 

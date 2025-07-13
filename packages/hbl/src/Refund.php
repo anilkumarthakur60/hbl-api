@@ -12,7 +12,7 @@ class Refund extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100'; // OrderNo can be Refund one time only
 
         $actionBy = 'System|c88ef0dc-14ea-4556-922b-7f62a6a3ec9e';
@@ -60,7 +60,7 @@ class Refund extends ActionRequest
     public function ExecuteJose(): string
     {
         $now = Carbon::now();
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100'; // OrderNo can be Refund one time only
 
         $actionBy = 'System|c88ef0dc-14ea-4556-922b-7f62a6a3ec9e';

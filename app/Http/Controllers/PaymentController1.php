@@ -18,15 +18,15 @@ class PaymentController1 extends Controller
             $failed_url = config('app.url') . '/failed';
             $cancel_url = config('app.url') . '/cancel';
             $backend_url = config('app.url') . '/backend';
-            $amount = $request->amount ?? 1000;
+            $amount = $request->amount ?? 1;
 
             $payment = new Payment;
             $joseResponse = $payment->ExecuteFormJose(
-                mid: SecurityData::$MerchantId,
-                api_key: SecurityData::$AccessToken,
+                mid: config('hbl.OfficeId'),
+                api_key: config('hbl.AccessToken'),
                 curr: 'NPR',
                 amt: $amount,
-                threeD: 'N',
+                threeD: 'Y',
                 success_url: $success_url,
                 failed_url: $failed_url,
                 cancel_url: $cancel_url,
