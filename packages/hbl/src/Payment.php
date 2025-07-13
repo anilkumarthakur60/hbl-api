@@ -3,98 +3,100 @@
 namespace Anil\Hbl;
 
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Carbon;
+use GuzzleHttp\Exception\GuzzleException;
+use Anil\Hbl\ActionRequest;
+use Anil\Hbl\SecurityData;
 
 class Payment extends ActionRequest
 {
     /**
      * @throws GuzzleException
      */
-    public function Execute($orderNo = null): string
+    public function Execute(): string
     {
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
 
         $request = [
-            'apiRequest' => [
-                'requestMessageID' => $this->Guid(),
-                'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+            "apiRequest" => [
+                "requestMessageID" => $this->Guid(),
+                "requestDateTime" => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
+                "language" => "en-US",
             ],
-            'officeId' => config('hbl.OfficeId'),
-            'orderNo' => $orderNo,
-            'productDescription' => "desc for '$orderNo'",
-            'paymentType' => 'CC',
-            'paymentCategory' => 'ECOM',
-            'creditCardDetails' => [
-                'cardNumber' => '4706860000002325',
-                'cardExpiryMMYY' => '1225',
-                'cvvCode' => '761',
-                'payerName' => 'Demo Sample',
+            "officeId" => "9104137120",
+            "orderNo" => $orderNo,
+            "productDescription" => "desc for '$orderNo'",
+            "paymentType" => "CC",
+            "paymentCategory" => "ECOM",
+            "creditCardDetails" => [
+                "cardNumber" => "4706860000002325",
+                "cardExpiryMMYY" => "1225",
+                "cvvCode" => "761",
+                "payerName" => "Demo Sample"
             ],
-            'storeCardDetails' => [
-                'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+            "storeCardDetails" => [
+                "storeCardFlag" => "N",
+                "storedCardUniqueID" => "{{guid}}"
             ],
-            'installmentPaymentDetails' => [
-                'ippFlag' => 'N',
-                'installmentPeriod' => 0,
-                'interestType' => null,
+            "installmentPaymentDetails" => [
+                "ippFlag" => "N",
+                "installmentPeriod" => 0,
+                "interestType" => null
             ],
-            'mcpFlag' => 'N',
-            'request3dsFlag' => 'N',
-            'transactionAmount' => [
-                'amountText' => '000000100000',
-                'currencyCode' => 'NPR',
-                'decimalPlaces' => 2,
-                'amount' => 1000,
+            "mcpFlag" => "N",
+            "request3dsFlag" => "N",
+            "transactionAmount" => [
+                "amountText" => "000000100000",
+                "currencyCode" => "NPR",
+                "decimalPlaces" => 2,
+                "amount" => 1000
             ],
-            'notificationURLs' => [
-                'confirmationURL' => 'http://example-confirmation.com',
-                'failedURL' => 'http://example-failed.com',
-                'cancellationURL' => 'http://example-cancellation.com',
-                'backendURL' => 'http://example-backend.com',
+            "notificationURLs" => [
+                "confirmationURL" => "http://example-confirmation.com",
+                "failedURL" => "http://example-failed.com",
+                "cancellationURL" => "http://example-cancellation.com",
+                "backendURL" => "http://example-backend.com"
             ],
-            'deviceDetails' => [
-                'browserIp' => '1.0.0.1',
-                'browser' => 'Postman Browser',
-                'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-                'mobileDeviceFlag' => 'N',
+            "deviceDetails" => [
+                "browserIp" => "1.0.0.1",
+                "browser" => "Postman Browser",
+                "browserUserAgent" => "PostmanRuntime/7.26.8 - not from header",
+                "mobileDeviceFlag" => "N"
             ],
-            'purchaseItems' => [
+            "purchaseItems" => [
                 [
-                    'purchaseItemType' => 'ticket',
-                    'referenceNo' => '2322460376026',
-                    'purchaseItemDescription' => 'Bundled insurance',
-                    'purchaseItemPrice' => [
-                        'amountText' => '000000100000',
-                        'currencyCode' => 'THB',
-                        'decimalPlaces' => 2,
-                        'amount' => 1000,
+                    "purchaseItemType" => "ticket",
+                    "referenceNo" => "2322460376026",
+                    "purchaseItemDescription" => "Bundled insurance",
+                    "purchaseItemPrice" => [
+                        "amountText" => "000000100000",
+                        "currencyCode" => "THB",
+                        "decimalPlaces" => 2,
+                        "amount" => 1000
                     ],
-                    'subMerchantID' => 'string',
-                    'passengerSeqNo' => 1,
-                ],
+                    "subMerchantID" => "string",
+                    "passengerSeqNo" => 1
+                ]
             ],
-            'customFieldList' => [
+            "customFieldList" => [
                 [
-                    'fieldName' => 'TestField',
-                    'fieldValue' => 'This is test',
-                ],
-            ],
+                    "fieldName" => "TestField",
+                    "fieldValue" => "This is test"
+                ]
+            ]
         ];
 
         $stringRequest = json_encode($request);
 
-        // third-party http client https://github.com/guzzle/guzzle
+        //third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/json; charset=utf-8',
+                'Content-Type' => 'application/json; charset=utf-8'
             ],
-            'body' => $stringRequest,
+            'body' => $stringRequest
         ]);
 
         return $response->getBody()->getContents();
@@ -110,76 +112,76 @@ class Payment extends ActionRequest
         $orderNo = $now->getPreciseTimestamp(3);
 
         $request = [
-            'apiRequest' => [
-                'requestMessageID' => $this->Guid(),
-                'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+            "apiRequest" => [
+                "requestMessageID" => $this->Guid(),
+                "requestDateTime" => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
+                "language" => "en-US",
             ],
-            'officeId' => 9104137120,
-            'orderNo' => $orderNo,
-            'productDescription' => "desc for '$orderNo'",
-            'paymentType' => 'CC',
-            'paymentCategory' => 'ECOM',
-            'storeCardDetails' => [
-                'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+            "officeId" => "9104137120",
+            "orderNo" => $orderNo,
+            "productDescription" => "desc for '$orderNo'",
+            "paymentType" => "CC",
+            "paymentCategory" => "ECOM",
+            "storeCardDetails" => [
+                "storeCardFlag" => "N",
+                "storedCardUniqueID" => "{{guid}}"
             ],
-            'installmentPaymentDetails' => [
-                'ippFlag' => 'N',
-                'installmentPeriod' => 0,
-                'interestType' => null,
+            "installmentPaymentDetails" => [
+                "ippFlag" => "N",
+                "installmentPeriod" => 0,
+                "interestType" => null
             ],
-            'mcpFlag' => 'N',
-            'request3dsFlag' => 'Y',
-            'transactionAmount' => [
-                'amountText' => '000000100000',
-                'currencyCode' => 'THB',
-                'decimalPlaces' => 2,
-                'amount' => 1000,
+            "mcpFlag" => "N",
+            "request3dsFlag" => "Y",
+            "transactionAmount" => [
+                "amountText" => "000000100000",
+                "currencyCode" => "THB",
+                "decimalPlaces" => 2,
+                "amount" => 1000
             ],
-            'notificationURLs' => [
-                'confirmationURL' => 'http://example-confirmation.com',
-                'failedURL' => 'http://example-failed.com',
-                'cancellationURL' => 'http://example-cancellation.com',
-                'backendURL' => 'http://example-backend.com',
+            "notificationURLs" => [
+                "confirmationURL" => "http://example-confirmation.com",
+                "failedURL" => "http://example-failed.com",
+                "cancellationURL" => "http://example-cancellation.com",
+                "backendURL" => "http://example-backend.com"
             ],
-            'deviceDetails' => [
-                'browserIp' => '1.0.0.1',
-                'browser' => 'Postman Browser',
-                'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-                'mobileDeviceFlag' => 'N',
+            "deviceDetails" => [
+                "browserIp" => "1.0.0.1",
+                "browser" => "Postman Browser",
+                "browserUserAgent" => "PostmanRuntime/7.26.8 - not from header",
+                "mobileDeviceFlag" => "N"
             ],
-            'purchaseItems' => [
+            "purchaseItems" => [
                 [
-                    'purchaseItemType' => 'ticket',
-                    'referenceNo' => '2322460376026',
-                    'purchaseItemDescription' => 'Bundled insurance',
-                    'purchaseItemPrice' => [
-                        'amountText' => '000000100000',
-                        'currencyCode' => 'THB',
-                        'decimalPlaces' => 2,
-                        'amount' => 1000,
+                    "purchaseItemType" => "ticket",
+                    "referenceNo" => "2322460376026",
+                    "purchaseItemDescription" => "Bundled insurance",
+                    "purchaseItemPrice" => [
+                        "amountText" => "000000100000",
+                        "currencyCode" => "THB",
+                        "decimalPlaces" => 2,
+                        "amount" => 1000
                     ],
-                    'subMerchantID' => 'string',
-                    'passengerSeqNo' => 1,
-                ],
+                    "subMerchantID" => "string",
+                    "passengerSeqNo" => 1
+                ]
             ],
-            'customFieldList' => [
+            "customFieldList" => [
                 [
-                    'fieldName' => 'TestField',
-                    'fieldValue' => 'This is test',
-                ],
-            ],
+                    "fieldName" => "TestField",
+                    "fieldValue" => "This is test"
+                ]
+            ]
         ];
 
         $payload = [
-            'request' => $request,
-            'iss' => SecurityData::$AccessToken,
-            'aud' => 'PacoAudience',
-            'CompanyApiKey' => SecurityData::$AccessToken,
-            'iat' => $now->unix(),
-            'nbf' => $now->unix(),
-            'exp' => $now->addHour()->unix(),
+            "request" => $request,
+            "iss" => SecurityData::$AccessToken,
+            "aud" => "PacoAudience",
+            "CompanyApiKey" => SecurityData::$AccessToken,
+            "iat" => $now->unix(),
+            "nbf" => $now->unix(),
+            "exp" => $now->addHour()->unix(),
         ];
 
         $stringPayload = json_encode($payload);
@@ -188,14 +190,15 @@ class Payment extends ActionRequest
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
-        // third-party http client https://github.com/guzzle/guzzle
+
+        //third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/jose; charset=utf-8',
+                'Content-Type' => 'application/jose; charset=utf-8'
             ],
-            'body' => $body,
+            'body' => $body
         ]);
 
         $token = $response->getBody()->getContents();
@@ -204,91 +207,87 @@ class Payment extends ActionRequest
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }
-
     /**
      * @throws GuzzleException
      * @throws Exception
      */
-    public function executeFormJose($amt, $orderNo, $additionalData = []): string
+
+    public function executeFormJose($amt, $orderNo, $additionalData): string
     {
         $now = Carbon::now();
-
-        $custom_fields = [];
-        if (! empty($additionalData)) {
-            foreach ($additionalData as $key => $value) {
-                $custom_fields[] = [
-                    'fieldName' => $key,
-                    'fieldValue' => $value,
-                ];
-            }
-        }
+        $orderNo = $now->getPreciseTimestamp(3);
 
         $request = [
-            'apiRequest' => [
-                'requestMessageID' => $this->Guid(),
-                'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+            "apiRequest" => [
+                "requestMessageID" => $this->Guid(),
+                "requestDateTime" => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
+                "language" => "en-US",
             ],
-            'officeId' => config('hbl.OfficeId'),
-            'orderNo' => $orderNo,
-            'productDescription' => "desc for '$orderNo'",
-            'paymentType' => 'CC',
-            'paymentCategory' => 'ECOM',
-            'storeCardDetails' => [
-                'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+            "officeId" => config('hbl.OfficeId'),
+            "orderNo" => $orderNo,
+            "productDescription" => "desc for '$orderNo'",
+            "paymentType" => "CC",
+            "paymentCategory" => "ECOM",
+            "storeCardDetails" => [
+                "storeCardFlag" => "N",
+                "storedCardUniqueID" => "{{guid}}"
             ],
-            'installmentPaymentDetails' => [
-                'ippFlag' => 'N',
-                'installmentPeriod' => 0,
-                'interestType' => null,
+            "installmentPaymentDetails" => [
+                "ippFlag" => "N",
+                "installmentPeriod" => 0,
+                "interestType" => null
             ],
-            'mcpFlag' => 'N',
-            'request3dsFlag' => config('hbl.Input3DS'),
-            'transactionAmount' => [
-                'amountText' => str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT),
-                'currencyCode' => config('hbl.InputCurrency'),
-                'decimalPlaces' => 2,
-                'amount' => $amt,
+            "mcpFlag" => "N",
+            "request3dsFlag" => config('hbl.Input3DS'),
+            "transactionAmount" => [
+                "amountText" => str_pad(($amt == null ? 0 : $amt) * 100, 12, "0", STR_PAD_LEFT),
+                "currencyCode" => config('hbl.InputCurrency'),
+                "decimalPlaces" => 2,
+                "amount" => $amt
             ],
-            'notificationURLs' => [
-                'confirmationURL' => config('hbl.payment_jose_redirect_url.success'),
-                'failedURL' => config('hbl.payment_jose_redirect_url.failed'),
-                'cancellationURL' => config('hbl.payment_jose_redirect_url.cancel'),
-                'backendURL' => config('hbl.payment_jose_redirect_url.backend'),
+            "notificationURLs" => [
+                "confirmationURL" => config('hbl.payment_jose_redirect_url.success'),
+                "failedURL" => config('hbl.payment_jose_redirect_url.failed'),
+                "cancellationURL" => config('hbl.payment_jose_redirect_url.cancel'),
+                "backendURL" => config('hbl.payment_jose_redirect_url.backend')
             ],
-            'deviceDetails' => [
-                'browserIp' => '1.0.0.1',
-                'browser' => 'Postman Browser',
-                'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-                'mobileDeviceFlag' => 'N',
+            "deviceDetails" => [
+                "browserIp" => "1.0.0.1",
+                "browser" => "Postman Browser",
+                "browserUserAgent" => "PostmanRuntime/7.26.8 - not from header",
+                "mobileDeviceFlag" => "N"
             ],
-            'purchaseItems' => [
+            "purchaseItems" => [
                 [
-                    'purchaseItemType' => 'ticket',
-                    'referenceNo' => '2322460376026',
-                    'purchaseItemDescription' => 'Bundled insurance',
-                    'purchaseItemPrice' => [
-                        'amountText' => '000000000100',
-                        'currencyCode' => 'NPR',
-                        'decimalPlaces' => 2,
-                        'amount' => 1,
+                    "purchaseItemType" => "ticket",
+                    "referenceNo" => "2322460376026",
+                    "purchaseItemDescription" => "Bundled insurance",
+                    "purchaseItemPrice" => [
+                        "amountText" => "000000000100",
+                        "currencyCode" => "NPR",
+                        "decimalPlaces" => 2,
+                        "amount" => 1
                     ],
-                    'subMerchantID' => 'string',
-                    'passengerSeqNo' => 1,
-                ],
+                    "subMerchantID" => "string",
+                    "passengerSeqNo" => 1
+                ]
             ],
-            'customFieldList' => $custom_fields,
+            "customFieldList" => [
+                [
+                    "fieldName" => "TestField",
+                    "fieldValue" => "This is test"
+                ]
+            ]
         ];
 
         $payload = [
-            'request' => $request,
-            'iss' => config('hbl.AccessToken'),
-            'aud' => 'PacoAudience',
-            'CompanyApiKey' => config('hbl.AccessToken'),
-            'iat' => $now->unix(),
-            'nbf' => $now->unix(),
-            'exp' => $now->addHour()->unix(),
+            "request" => $request,
+            "iss" => config('hbl.AccessToken'),
+            "aud" => "PacoAudience",
+            "CompanyApiKey" => config('hbl.AccessToken'),
+            "iat" => $now->unix(),
+            "nbf" => $now->unix(),
+            "exp" => $now->addHour()->unix(),
         ];
 
         $stringPayload = json_encode($payload);
@@ -297,13 +296,15 @@ class Payment extends ActionRequest
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
+
+        //third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/jose; charset=utf-8',
+                'Content-Type' => 'application/jose; charset=utf-8'
             ],
-            'body' => $body,
+            'body' => $body
         ]);
 
         $token = $response->getBody()->getContents();

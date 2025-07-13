@@ -14,7 +14,8 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "realrashid/sweet-alert": "^7.3",
-        "spomky-labs/aes-key-wrap": "^7.0"
+        "spomky-labs/aes-key-wrap": "^7.0",
+        "yoeunes/toastr": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
