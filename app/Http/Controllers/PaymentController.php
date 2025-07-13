@@ -56,6 +56,7 @@ class PaymentController extends Controller
         $responses = HblResponse::query()->latest()->get();
 
         Alert::success('Payment successful', "Payment successful for order no: $request->orderNo");
+
         return view('payment.index', compact('responses'));
     }
 
@@ -71,6 +72,7 @@ class PaymentController extends Controller
         $responses = HblResponse::query()->latest()->get();
 
         Alert::error('Payment failed', "Payment failed for order no: $request->orderNo");
+
         return view('payment.index', compact('responses'));
     }
 
@@ -86,6 +88,7 @@ class PaymentController extends Controller
         $responses = HblResponse::query()->latest()->get();
 
         Alert::error('Payment cancelled', "Payment cancelled for order no: $request->orderNo");
+
         return view('payment.index', compact('responses'));
     }
 
@@ -101,13 +104,14 @@ class PaymentController extends Controller
         $responses = HblResponse::query()->latest()->get();
 
         Alert::error('Payment backend', "Payment backend for order no: $request->orderNo");
+
         return view('payment.index', compact('responses'));
     }
 
     public function index()
     {
         $responses = HblResponse::query()->latest()->get();
-        Alert::info('Payment index', "Payment index for order no: ");
+        Alert::info('Payment index', 'Payment index for order no: ');
 
         return view('payment.index', compact('responses'));
     }

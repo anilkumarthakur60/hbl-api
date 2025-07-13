@@ -12,7 +12,7 @@ class SecurityData
     /**
      * Access Token.
      */
-    public static string $AccessToken = 'e6c5e2756e2e41878c852bce8d208632';
+    public static string $AccessToken = '65805a1636c74b8e8ac81a991da80be4';
 
     /**
      * Token Type - Used in JWS and JWE header.

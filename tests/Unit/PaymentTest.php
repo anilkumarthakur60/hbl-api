@@ -141,22 +141,19 @@ beforeEach(function () {
 
 it('actually hits the HBL sandbox and returns a well-formed response', function () {
     $json = $this->payment->executeFormJose(
-        mid: $this->merchantId,
-        api_key: $this->apiKey,
-        curr: 'NPR',
         amt: 100,
-        threeD: 'Y',
-        success_url: $this->successUrl,
-        failed_url: $this->failedUrl,
-        cancel_url: $this->cancelUrl,
-        backend_url: $this->backendUrl,
+        orderNo: \Illuminate\Support\Str::random(15),
+        additionalData: [
+            'fullname' => 'Anil Kumar Thakur',
+            'email' => 'anilkumarthakur60@gmail.com',
+        ]
     );
     $object = json_decode($json);
 
     // root / data sanity
-    expect($object)->toBeObject();
-    expect($object->response)->toBeObject();
-    expect($object->response->data)->toBeObject();
+    expect($object)->toBeObject()
+        ->and($object->response)->toBeObject()
+        ->and($object->response->data)->toBeObject();
 
     // pull out the two main bits
     $result = $object->response->data->paymentIncompleteResult;
@@ -164,62 +161,62 @@ it('actually hits the HBL sandbox and returns a well-formed response', function 
     $api = $object->response->apiResponse;
 
     // ─── paymentIncompleteResult ───────────────────────────────────────────
-    expect($result)->toBeObject();
-    expect($result->notificationURLs)->toBeObject();
-    expect($result->notificationURLs->confirmationUrl)->toBeString();
-    expect($result->notificationURLs->cancellationUrl)->toBeString();
-    expect($result->notificationURLs->failedUrl)->toBeString();
-    expect($result->notificationURLs->backendUrl)->toBeString();
+    expect($result)->toBeObject()
+        ->and($result->notificationURLs)->toBeObject()
+        ->and($result->notificationURLs->confirmationUrl)->toBeString()
+        ->and($result->notificationURLs->cancellationUrl)->toBeString()
+        ->and($result->notificationURLs->failedUrl)->toBeString()
+        ->and($result->notificationURLs->backendUrl)->toBeString()
+        ->and($result->availablePaymentTypes)->toBeArray();
 
-    expect($result->availablePaymentTypes)->toBeArray();
     foreach (['CC', 'CC-VI', 'CC-CA', 'CC-AX', 'CC-UP'] as $type) {
         expect($result->availablePaymentTypes)->toContain($type);
     }
 
     // status info
-    expect($result->paymentStatusInfo)->toBeObject();
-    expect($result->paymentStatusInfo->paymentStatus)->toBeString();
-    expect($result->paymentStatusInfo->paymentStep)->toBeString();
-    expect($result->paymentStatusInfo->lastUpdatedDateTime)->toBeString();
+    expect($result->paymentStatusInfo)->toBeObject()
+        ->and($result->paymentStatusInfo->paymentStatus)->toBeString()
+        ->and($result->paymentStatusInfo->paymentStep)->toBeString()
+        ->and($result->paymentStatusInfo->lastUpdatedDateTime)->toBeString()
+        ->and($result->orderNo)->toBeString()
+        ->and($result->productDescription)->toBeString()
+        ->and($result->paymentExpiryDateTime)->toBeString()
+        ->and($result->currencyConversionType)->toBeString()
+        ->and($result->transactionAmount)->toBeObject()
+        ->and($result->transactionAmount->amount)->toBeFloat()
+        ->and($result->transactionAmount->currencyCode)->toBeString()
+        ->and($result->transactionAmount->decimalPlaces)->toBeInt()
+        ->and($result->transactionAmount->amountText)->toBeString()
+        ->and($page)->toBeObject()
+        ->and($page->paymentPageURL)->toBeString()
+        ->and($page->validTillDateTime)->toBeString()
+        ->and($api->responseMessageId)->toBeString()
+        ->and($api->responseToRequestMessageId)->toBeString()
+        ->and($api->responseCode)->toBeString()
+        ->and($api->responseDescription)->toBeString()
+        ->and($api->responseDateTime)->toBeString()
+        ->and($api->responseTime)->toBeInt()
+        ->and($api->marketingDescription)->toBeString()
+        ->and(is_string($api->acquirerResponseCode) || is_null($api->acquirerResponseCode))->toBeTrue()
+        ->and(is_string($api->acquirerResponseDescription) || is_null($api->acquirerResponseDescription))->toBeTrue()
+        ->and(is_string($api->eciValue) || is_null($api->eciValue))->toBeTrue()
+        ->and($object->aud)->toBeString()
+        ->and($object->iss)->toBeString()
+        ->and($object->exp)->toBeInt()
+        ->and($object->iat)->toBeInt()
+        ->and($object->nbf)->toBeInt();
 
     // core fields
-    expect($result->orderNo)->toBeString();
-    expect($result->productDescription)->toBeString();
-    expect($result->paymentExpiryDateTime)->toBeString();
-    expect($result->currencyConversionType)->toBeString();
 
     // amount
-    expect($result->transactionAmount)->toBeObject();
-    expect($result->transactionAmount->amount)->toBeFloat();
-    expect($result->transactionAmount->currencyCode)->toBeString();
-    expect($result->transactionAmount->decimalPlaces)->toBeInt();
-    expect($result->transactionAmount->amountText)->toBeString();
 
     // ─── paymentPage ───────────────────────────────────────────────────────
-    expect($page)->toBeObject();
-    expect($page->paymentPageURL)->toBeString();
-    expect($page->validTillDateTime)->toBeString();
 
     // ─── apiResponse ───────────────────────────────────────────────────────
-    expect($api->responseMessageId)->toBeString();
-    expect($api->responseToRequestMessageId)->toBeString();
-    expect($api->responseCode)->toBeString();
-    expect($api->responseDescription)->toBeString();
-    expect($api->responseDateTime)->toBeString();
-    expect($api->responseTime)->toBeInt();
-    expect($api->marketingDescription)->toBeString();
 
     // these three may be string or null
-    expect(is_string($api->acquirerResponseCode) || is_null($api->acquirerResponseCode))->toBeTrue();
-    expect(is_string($api->acquirerResponseDescription) || is_null($api->acquirerResponseDescription))->toBeTrue();
-    expect(is_string($api->eciValue) || is_null($api->eciValue))->toBeTrue();
 
     // ─── JWT Claims ────────────────────────────────────────────────────────
-    expect($object->aud)->toBeString();
-    expect($object->iss)->toBeString();
-    expect($object->exp)->toBeInt();
-    expect($object->iat)->toBeInt();
-    expect($object->nbf)->toBeInt();
 
     // ─── OPTIONAL / NULLABLE FIELDS IN paymentIncompleteResult ────────────
     foreach (

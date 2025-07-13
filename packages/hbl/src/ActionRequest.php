@@ -11,9 +11,7 @@ use Jose\Component\Checker\AudienceChecker;
 use Jose\Component\Checker\ClaimCheckerManager;
 use Jose\Component\Checker\ExpirationTimeChecker;
 use Jose\Component\Checker\HeaderCheckerManager;
-use Jose\Component\Checker\InvalidClaimException;
 use Jose\Component\Checker\IssuerChecker;
-use Jose\Component\Checker\MissingMandatoryClaimException;
 use Jose\Component\Checker\NotBeforeChecker;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
@@ -195,8 +193,6 @@ abstract class ActionRequest
     /**
      * Decrypts a JOSE Token and returns plain text payload
      *
-     * @throws InvalidClaimException
-     * @throws MissingMandatoryClaimException
      * @throws Exception
      */
     protected function DecryptToken(string $token, JWK $decryptingKey, JWK $signatureVerificationKey): string
@@ -219,18 +215,15 @@ abstract class ActionRequest
      */
     protected function Guid(): string
     {
-        if (function_exists('com_create_guid')) {
-            return com_create_guid();
-        } else {
-            $charId = strtoupper(md5(uniqid(rand(), true)));
-            $hyphen = chr(45); // "-"
-            $guid = substr($charId, 0, 8).$hyphen
-                .substr($charId, 8, 4).$hyphen
-                .substr($charId, 12, 4).$hyphen
-                .substr($charId, 16, 4).$hyphen
-                .substr($charId, 20, 12);
 
-            return strtolower($guid);
-        }
+        $charId = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45); // "-"
+        $guid = substr($charId, 0, 8).$hyphen
+            .substr($charId, 8, 4).$hyphen
+            .substr($charId, 12, 4).$hyphen
+            .substr($charId, 16, 4).$hyphen
+            .substr($charId, 20, 12);
+
+        return strtolower($guid);
     }
 }
