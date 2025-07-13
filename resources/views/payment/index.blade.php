@@ -66,7 +66,7 @@
 
         <div class="mb-3">
             <label for="amount" class="form-label">Amount to Pay (NPR):</label>
-            <input type="number" value="100" required name="amount" class="form-control" id="amount" placeholder="e.g. 100">
+            <input type="number" value="1" required name="amount" class="form-control" id="amount" placeholder="e.g. 1">
         </div>
 
 
@@ -107,6 +107,7 @@
                                 <th scope="col">Response</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Action</th>
+                                <th scope="col">Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,7 +119,12 @@
                                 </td>
                                 <td>{{ $response->status }}</td>
                                 <td>
-                                    <a href="{{ route('payment.status', $response->order_no) }}" target="_blank" class="btn btn-primary">Check Status</a>
+                                    <a href="{{ route('payment.status', $response->order_no) }}" target="_blank" class="btn {{ $response->status == 'success' ? 'btn-success' : 'btn-danger' }}">
+                                        See Details
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ route('payment.delete', $response->order_no) }}" class="btn btn-secondary">Delete</a>
                                 </td>
                             </tr>
                             @endforeach

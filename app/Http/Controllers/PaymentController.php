@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
-use Anil\Hbl\SecurityData;
 use Anil\Hbl\TransactionStatus;
 use App\Models\HblResponse;
 use Illuminate\Http\Request;
@@ -15,23 +14,17 @@ class PaymentController extends Controller
     {
 
         try {
-            $success_url = config('app.url') . '/success';
-            $failed_url = config('app.url') . '/failed';
-            $cancel_url = config('app.url') . '/cancel';
-            $backend_url = config('app.url') . '/backend';
-            $amount = $request->amount ?? 1000;
+            $amount = $request->amount ?? 1;
 
             $payment = new Payment;
             $joseResponse = $payment->executeFormJose(
-                mid: SecurityData::$MerchantId,
-                api_key: SecurityData::$AccessToken,
-                curr: 'NPR',
                 amt: $amount,
-                threeD: 'N',
-                success_url: $success_url,
-                failed_url: $failed_url,
-                cancel_url: $cancel_url,
-                backend_url: $backend_url,
+                additional_data: [
+                    'fullname' => 'Anil Kumar Thakur',
+                    'email' => 'anilkumarthakur60@gmail.com',
+                    'contact_number' => '9843262634',
+                    'amount' => $amount,
+                ],
             );
             $response = json_decode($joseResponse);
 
@@ -65,6 +58,7 @@ class PaymentController extends Controller
         ]);
 
         $responses = HblResponse::all();
+
         return view('payment.index', compact('responses'));
     }
 
@@ -78,6 +72,7 @@ class PaymentController extends Controller
         ]);
 
         $responses = HblResponse::all();
+
         return view('payment.index', compact('responses'));
     }
 
@@ -91,6 +86,7 @@ class PaymentController extends Controller
         ]);
 
         $responses = HblResponse::all();
+
         return view('payment.index', compact('responses'));
     }
 
@@ -103,9 +99,18 @@ class PaymentController extends Controller
 
     public function status($orderNo)
     {
-        $hbl = new TransactionStatus();
+        $hbl = new TransactionStatus;
         $response = $hbl->Execute($orderNo);
         $response = json_decode($response);
+
         return response()->json($response);
+    }
+
+    public function delete($orderNo)
+    {
+        $response = HblResponse::where('order_no', $orderNo)->firstOrFail();
+        $response->delete();
+
+        return redirect()->route('payment.index')->with('success', 'Response deleted successfully');
     }
 }

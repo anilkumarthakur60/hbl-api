@@ -2,7 +2,6 @@
 
 namespace Anil\Hbl;
 
-use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 
 class TransactionStatus extends ActionRequest

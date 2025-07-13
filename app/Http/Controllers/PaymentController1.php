@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
-use Anil\Hbl\SecurityData;
 use App\Models\HblResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,10 +13,10 @@ class PaymentController1 extends Controller
     {
 
         try {
-            $success_url = config('app.url') . '/success';
-            $failed_url = config('app.url') . '/failed';
-            $cancel_url = config('app.url') . '/cancel';
-            $backend_url = config('app.url') . '/backend';
+            $success_url = config('app.url').'/success';
+            $failed_url = config('app.url').'/failed';
+            $cancel_url = config('app.url').'/cancel';
+            $backend_url = config('app.url').'/backend';
             $amount = $request->amount ?? 1;
 
             $payment = new Payment;
@@ -64,6 +63,7 @@ class PaymentController1 extends Controller
         ]);
 
         $responses = HblResponse::all();
+
         return view('payment.index', compact('responses'));
     }
 
@@ -77,6 +77,7 @@ class PaymentController1 extends Controller
         ]);
 
         $responses = HblResponse::all();
+
         return view('payment.index', compact('responses'));
     }
 
@@ -90,6 +91,7 @@ class PaymentController1 extends Controller
         ]);
 
         $responses = HblResponse::all();
+
         return view('payment.index', compact('responses'));
     }
 
