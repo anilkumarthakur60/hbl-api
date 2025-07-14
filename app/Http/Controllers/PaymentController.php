@@ -36,6 +36,7 @@ class PaymentController extends Controller
                 ],
             );
             $response = json_decode($joseResponse);
+            dd($response);
             // dd($response);
 
             return redirect()->away($response->response->data->paymentPage->paymentPageURL);

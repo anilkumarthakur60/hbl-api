@@ -32,7 +32,7 @@ class TestCommand extends Command
     public function transactionStatus()
     {
         $hbl = new TransactionStatus;
-        $response = $hbl->Execute();
+        $response = $hbl->Execute('1635476979216');
         dd($response);
     }
 }
