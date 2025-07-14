@@ -11,18 +11,16 @@ class Payment extends ActionRequest
     /**
      * @throws GuzzleException
      */
-    public function Execute(): string
+    public function Execute($amt, $orderNo, $additionalData): string
     {
         $now = Carbon::now();
-        $orderNo = $now->getPreciseTimestamp(3);
-
         $request = [
             'apiRequest' => [
                 'requestMessageID' => $this->Guid(),
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
                 'language' => 'en-US',
             ],
-            'officeId' => '9104137120',
+            'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
             'productDescription' => "desc for '$orderNo'",
             'paymentType' => 'CC',
@@ -51,10 +49,10 @@ class Payment extends ActionRequest
                 'amount' => 1000,
             ],
             'notificationURLs' => [
-                'confirmationURL' => 'http://example-confirmation.com',
-                'failedURL' => 'http://example-failed.com',
-                'cancellationURL' => 'http://example-cancellation.com',
-                'backendURL' => 'http://example-backend.com',
+                'confirmationURL' => config('hbl.payment_jose_redirect_url.success'),
+                'failedURL' => config('hbl.payment_jose_redirect_url.failed'),
+                'cancellationURL' => config('hbl.payment_jose_redirect_url.cancel'),
+                'backendURL' => config('hbl.payment_jose_redirect_url.backend'),
             ],
             'deviceDetails' => [
                 'browserIp' => '1.0.0.1',
@@ -77,12 +75,7 @@ class Payment extends ActionRequest
                     'passengerSeqNo' => 1,
                 ],
             ],
-            'customFieldList' => [
-                [
-                    'fieldName' => 'TestField',
-                    'fieldValue' => 'This is test',
-                ],
-            ],
+            'customFieldList' => $additionalData,
         ];
 
         $stringRequest = json_encode($request);
@@ -104,7 +97,7 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteJose(): string
+    public function ExecuteJose($amt, $orderNo, $additionalData): string
     {
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
@@ -115,7 +108,7 @@ class Payment extends ActionRequest
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
                 'language' => 'en-US',
             ],
-            'officeId' => '9104137120',
+            'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
             'productDescription' => "desc for '$orderNo'",
             'paymentType' => 'CC',
@@ -138,10 +131,10 @@ class Payment extends ActionRequest
                 'amount' => 1000,
             ],
             'notificationURLs' => [
-                'confirmationURL' => 'http://example-confirmation.com',
-                'failedURL' => 'http://example-failed.com',
-                'cancellationURL' => 'http://example-cancellation.com',
-                'backendURL' => 'http://example-backend.com',
+                'confirmationURL' => config('hbl.payment_jose_redirect_url.success'),
+                'failedURL' => config('hbl.payment_jose_redirect_url.failed'),
+                'cancellationURL' => config('hbl.payment_jose_redirect_url.cancel'),
+                'backendURL' => config('hbl.payment_jose_redirect_url.backend'),
             ],
             'deviceDetails' => [
                 'browserIp' => '1.0.0.1',
@@ -164,12 +157,7 @@ class Payment extends ActionRequest
                     'passengerSeqNo' => 1,
                 ],
             ],
-            'customFieldList' => [
-                [
-                    'fieldName' => 'TestField',
-                    'fieldValue' => 'This is test',
-                ],
-            ],
+            'customFieldList' => $additionalData,
         ];
 
         $payload = [
@@ -227,7 +215,7 @@ class Payment extends ActionRequest
             'paymentCategory' => 'ECOM',
             'storeCardDetails' => [
                 'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+                'storedCardUniqueID' => $this->Guid(),
             ],
             'installmentPaymentDetails' => [
                 'ippFlag' => 'N',
