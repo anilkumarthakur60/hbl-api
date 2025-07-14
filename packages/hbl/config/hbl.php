@@ -98,10 +98,24 @@ return [
      */
     'Input3DS' => (string) env('HBL_INPUT_3DS', 'N'),
 
-    'payment_jose_redirect_url' => [
-        'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS', config('app.url', 'http://hbl-api.test') . '/success'),
-        'failed' => (string) env('HBL_JOSE_REDIRECT_URL_FAILED', config('app.url', 'http://hbl-api.test') . '/failed'),
-        'cancel' => (string) env('HBL_JOSE_REDIRECT_URL_CANCEL', config('app.url', 'http://hbl-api.test') . '/cancel'),
-        'backend' => (string) env('HBL_JOSE_REDIRECT_URL_BACKEND', config('app.url', 'http://hbl-api.test') . '/backend'),
+    'redirect_url' => [
+        'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS', config('app.url', 'http://hbl-api.test').'/success'),
+        'failed' => (string) env('HBL_JOSE_REDIRECT_URL_FAILED', config('app.url', 'http://hbl-api.test').'/failed'),
+        'cancel' => (string) env('HBL_JOSE_REDIRECT_URL_CANCEL', config('app.url', 'http://hbl-api.test').'/cancel'),
+        'backend' => (string) env('HBL_JOSE_REDIRECT_URL_BACKEND', config('app.url', 'http://hbl-api.test').'/backend'),
+    ],
+
+    // language
+    'language' => (string) env('HBL_LANGUAGE', 'en-US'),
+    'payment_type' => (string) env('HBL_PAYMENT_TYPE', 'CC'),
+    'payment_category' => (string) env('HBL_PAYMENT_CATEGORY', 'ECOM'),
+    'store_card_flag' => (string) env('HBL_STORE_CARD_FLAG', 'N'),
+    'mcp_flag' => (string) env('HBL_MCP_FLAG', 'N'),
+    'decimal_places' => (int) env('HBL_DECIMAL_PLACES', 2),
+    'device_details' => [
+        'browserIp' => '1.0.0.1',
+        'browser' => 'Postman Browser',
+        'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
+        'mobileDeviceFlag' => 'N',
     ],
 ];

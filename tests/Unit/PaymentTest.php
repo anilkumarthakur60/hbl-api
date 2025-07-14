@@ -143,6 +143,7 @@ it('actually hits the HBL sandbox and returns a well-formed response', function 
     $json = $this->payment->executeFormJose(
         amt: 100,
         orderNo: \Illuminate\Support\Str::random(15),
+        orderDescription: 'Test Payment',
         additionalData: [
             'fullname' => 'Anil Kumar Thakur',
             'email' => 'anilkumarthakur60@gmail.com',

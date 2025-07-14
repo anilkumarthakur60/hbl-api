@@ -12,24 +12,23 @@ class Payment extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function executeFormJose($amt, $orderNo, $additionalData): string
+    public function executeFormJose($amt, $orderNo, $orderDescription, $additionalData): string
     {
         $now = Carbon::now();
-        $orderNo = $now->getPreciseTimestamp(3);
 
         $request = [
             'apiRequest' => [
                 'requestMessageID' => $this->Guid(),
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+                'language' => config('hbl.language'),
             ],
             'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
-            'productDescription' => "desc for '$orderNo'",
-            'paymentType' => 'CC',
-            'paymentCategory' => 'ECOM',
+            'productDescription' => $orderDescription,
+            'paymentType' => config('hbl.payment_type'),
+            'paymentCategory' => config('hbl.payment_category'),
             'storeCardDetails' => [
-                'storeCardFlag' => 'N',
+                'storeCardFlag' => config('hbl.store_card_flag'),
                 'storedCardUniqueID' => $this->Guid(),
             ],
             'installmentPaymentDetails' => [
@@ -37,26 +36,21 @@ class Payment extends ActionRequest
                 'installmentPeriod' => 0,
                 'interestType' => null,
             ],
-            'mcpFlag' => 'N',
+            'mcpFlag' => config('hbl.mcp_flag'),
             'request3dsFlag' => config('hbl.Input3DS'),
             'transactionAmount' => [
                 'amountText' => str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT),
                 'currencyCode' => config('hbl.InputCurrency'),
-                'decimalPlaces' => 2,
+                'decimalPlaces' => config('hbl.decimal_places'),
                 'amount' => $amt,
             ],
             'notificationURLs' => [
-                'confirmationURL' => config('hbl.payment_jose_redirect_url.success'),
-                'failedURL' => config('hbl.payment_jose_redirect_url.failed'),
-                'cancellationURL' => config('hbl.payment_jose_redirect_url.cancel'),
-                'backendURL' => config('hbl.payment_jose_redirect_url.backend'),
+                'confirmationURL' => config('hbl.redirect_url.success'),
+                'failedURL' => config('hbl.redirect_url.failed'),
+                'cancellationURL' => config('hbl.redirect_url.cancel'),
+                'backendURL' => config('hbl.redirect_url.backend'),
             ],
-            'deviceDetails' => [
-                'browserIp' => '1.0.0.1',
-                'browser' => 'Postman Browser',
-                'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-                'mobileDeviceFlag' => 'N',
-            ],
+            'deviceDetails' => config('hbl.device_details'),
             'purchaseItems' => [
                 [
                     'purchaseItemType' => 'ticket',

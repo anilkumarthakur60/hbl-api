@@ -2,8 +2,8 @@
 
 namespace Anil\Hbl;
 
-use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Carbon;
 
 class Inquiry extends ActionRequest
 {
@@ -21,7 +21,7 @@ class Inquiry extends ActionRequest
             'apiRequest' => [
                 'requestMessageID' => $this->Guid(),
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+                'language' => config('hbl.language'),
             ],
             'advSearchParams' => [
                 'controllerInternalID' => null,

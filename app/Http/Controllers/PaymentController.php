@@ -28,6 +28,7 @@ class PaymentController extends Controller
             $joseResponse = $payment->executeFormJose(
                 amt: $amount,
                 orderNo: $orderNo,
+                orderDescription: 'Test Payment',
                 additionalData: [
                     'fullname' => 'Anil Kumar Thakur',
                     'email' => 'anilkumarthakur60@gmail.com',
