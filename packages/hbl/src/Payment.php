@@ -81,9 +81,9 @@ class Payment extends ActionRequest
 
         $payload = [
             "request" => $request,
-            "iss" => $api_key,
+            "iss" => config('hbl.AccessToken'),
             "aud" => "PacoAudience",
-            "CompanyApiKey" => $api_key,
+            "CompanyApiKey" => config('hbl.AccessToken'),
             "iat" => $now->unix(),
             "nbf" => $now->unix(),
             "exp" => $now->addHour()->unix(),
@@ -100,7 +100,7 @@ class Payment extends ActionRequest
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
-                'CompanyApiKey' => SecurityData::$AccessToken,
+                'CompanyApiKey' => config('hbl.AccessToken'),
                 'Content-Type' => 'application/jose; charset=utf-8'
             ],
             'body' => $body
