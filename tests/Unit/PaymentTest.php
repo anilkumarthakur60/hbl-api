@@ -141,12 +141,15 @@ beforeEach(function () {
 
 it('actually hits the HBL sandbox and returns a well-formed response', function () {
     $json = $this->payment->executeFormJose(
+        mid: 9104137120,
+        api_key: '65805a1636c74b8e8ac81a991da80be4',
+        curr: 'USD',
         amt: 100,
-        orderNo: \Illuminate\Support\Str::random(15),
-        additionalData: [
-            'fullname' => 'Anil Kumar Thakur',
-            'email' => 'anilkumarthakur60@gmail.com',
-        ]
+        threeD: 'Y',
+        success_url: $this->successUrl,
+        failed_url: $this->failedUrl,
+        cancel_url: $this->cancelUrl,
+        backend_url: $this->backendUrl,
     );
     $object = json_decode($json);
 
