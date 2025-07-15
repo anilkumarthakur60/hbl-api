@@ -11,6 +11,7 @@ class Payment extends ActionRequest
         $now = Carbon::now();
         $orderNo = $now->getPreciseTimestamp(3);
         $amt = round($amt, 2);
+        $textAmount = str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT);
 
         $request = [
             'apiRequest' => [
@@ -25,7 +26,7 @@ class Payment extends ActionRequest
             'paymentCategory' => 'ECOM',
             'storeCardDetails' => [
                 'storeCardFlag' => 'N',
-                'storedCardUniqueID' => '{{guid}}',
+                'storedCardUniqueID' => $this->Guid(),
             ],
             'installmentPaymentDetails' => [
                 'ippFlag' => 'N',
@@ -33,9 +34,9 @@ class Payment extends ActionRequest
                 'interestType' => null,
             ],
             'mcpFlag' => 'N',
-            'request3dsFlag' => $threeD,
+            'request3dsFlag' => config('hbl.Input3DS'),
             'transactionAmount' => [
-                'amountText' => str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT),
+                'amountText' => $textAmount,
                 'currencyCode' => config('hbl.InputCurrency'),
                 'decimalPlaces' => 2,
                 'amount' => $amt,
@@ -55,13 +56,13 @@ class Payment extends ActionRequest
             'purchaseItems' => [
                 [
                     'purchaseItemType' => 'ticket',
-                    'referenceNo' => '2322460376026',
+                    'referenceNo' => $orderNo,
                     'purchaseItemDescription' => 'Bundled insurance',
                     'purchaseItemPrice' => [
-                        'amountText' => '000000000100',
+                        'amountText' => $textAmount,
                         'currencyCode' => config('hbl.InputCurrency'),
                         'decimalPlaces' => 2,
-                        'amount' => 1,
+                        'amount' => $amt,
                     ],
                     'subMerchantID' => 'string',
                     'passengerSeqNo' => 1,
