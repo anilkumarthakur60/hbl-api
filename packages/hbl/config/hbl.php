@@ -99,10 +99,10 @@ return [
     'Input3DS' => (string) env('HBL_INPUT_3DS', 'N'),
 
     'redirect_url' => [
-        'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS', config('app.url', 'http://hbl-api.test') . '/success'),
-        'failed' => (string) env('HBL_JOSE_REDIRECT_URL_FAILED', config('app.url', 'http://hbl-api.test') . '/failed'),
-        'cancel' => (string) env('HBL_JOSE_REDIRECT_URL_CANCEL', config('app.url', 'http://hbl-api.test') . '/cancel'),
-        'backend' => (string) env('HBL_JOSE_REDIRECT_URL_BACKEND', config('app.url', 'http://hbl-api.test') . '/backend'),
+        'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS', config('app.url', 'http://hbl-api.test').'/success'),
+        'failed' => (string) env('HBL_JOSE_REDIRECT_URL_FAILED', config('app.url', 'http://hbl-api.test').'/failed'),
+        'cancel' => (string) env('HBL_JOSE_REDIRECT_URL_CANCEL', config('app.url', 'http://hbl-api.test').'/cancel'),
+        'backend' => (string) env('HBL_JOSE_REDIRECT_URL_BACKEND', config('app.url', 'http://hbl-api.test').'/backend'),
     ],
 
     // language

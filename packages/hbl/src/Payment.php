@@ -2,14 +2,10 @@
 
 namespace Anil\Hbl;
 
-use Anil\Hbl\ActionRequest;
-use Anil\Hbl\SecurityData;
 use Carbon\Carbon;
-use GuzzleHttp\Exception\GuzzleException;
 
 class Payment extends ActionRequest
 {
-
     public function ExecuteFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url): string
     {
         $now = Carbon::now();
@@ -17,76 +13,76 @@ class Payment extends ActionRequest
         $amt = round($amt, 2);
 
         $request = [
-            "apiRequest" => [
-                "requestMessageID" => $this->Guid(),
-                "requestDateTime" => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                "language" => "en-US",
+            'apiRequest' => [
+                'requestMessageID' => $this->Guid(),
+                'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
+                'language' => 'en-US',
             ],
-            "officeId" => config('hbl.OfficeId'),
-            "orderNo" => $orderNo,
-            "productDescription" => "desc for '$orderNo'",
-            "paymentType" => "CC",
-            "paymentCategory" => "ECOM",
-            "storeCardDetails" => [
-                "storeCardFlag" => "N",
-                "storedCardUniqueID" => "{{guid}}"
+            'officeId' => config('hbl.OfficeId'),
+            'orderNo' => $orderNo,
+            'productDescription' => "desc for '$orderNo'",
+            'paymentType' => 'CC',
+            'paymentCategory' => 'ECOM',
+            'storeCardDetails' => [
+                'storeCardFlag' => 'N',
+                'storedCardUniqueID' => '{{guid}}',
             ],
-            "installmentPaymentDetails" => [
-                "ippFlag" => "N",
-                "installmentPeriod" => 0,
-                "interestType" => null
+            'installmentPaymentDetails' => [
+                'ippFlag' => 'N',
+                'installmentPeriod' => 0,
+                'interestType' => null,
             ],
-            "mcpFlag" => "N",
-            "request3dsFlag" => $threeD,
-            "transactionAmount" => [
-                "amountText" => str_pad(($amt == null ? 0 : $amt) * 100, 12, "0", STR_PAD_LEFT),
-                "currencyCode" => $curr,
-                "decimalPlaces" => 2,
-                "amount" => $amt
+            'mcpFlag' => 'N',
+            'request3dsFlag' => $threeD,
+            'transactionAmount' => [
+                'amountText' => str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT),
+                'currencyCode' => config('hbl.InputCurrency'),
+                'decimalPlaces' => 2,
+                'amount' => $amt,
             ],
-            "notificationURLs" => [
-                "confirmationURL" => $success_url,
-                "failedURL" => $failed_url,
-                "cancellationURL" => $cancel_url,
-                "backendURL" => $backend_url
+            'notificationURLs' => [
+                'confirmationURL' => $success_url,
+                'failedURL' => $failed_url,
+                'cancellationURL' => $cancel_url,
+                'backendURL' => $backend_url,
             ],
-            "deviceDetails" => [
-                "browserIp" => "1.0.0.1",
-                "browser" => "Postman Browser",
-                "browserUserAgent" => "PostmanRuntime/7.26.8 - not from header",
-                "mobileDeviceFlag" => "N"
+            'deviceDetails' => [
+                'browserIp' => '1.0.0.1',
+                'browser' => 'Postman Browser',
+                'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
+                'mobileDeviceFlag' => 'N',
             ],
-            "purchaseItems" => [
+            'purchaseItems' => [
                 [
-                    "purchaseItemType" => "ticket",
-                    "referenceNo" => "2322460376026",
-                    "purchaseItemDescription" => "Bundled insurance",
-                    "purchaseItemPrice" => [
-                        "amountText" => "000000000100",
-                        "currencyCode" => "NPR",
-                        "decimalPlaces" => 2,
-                        "amount" => 1
+                    'purchaseItemType' => 'ticket',
+                    'referenceNo' => '2322460376026',
+                    'purchaseItemDescription' => 'Bundled insurance',
+                    'purchaseItemPrice' => [
+                        'amountText' => '000000000100',
+                        'currencyCode' => config('hbl.InputCurrency'),
+                        'decimalPlaces' => 2,
+                        'amount' => 1,
                     ],
-                    "subMerchantID" => "string",
-                    "passengerSeqNo" => 1
-                ]
+                    'subMerchantID' => 'string',
+                    'passengerSeqNo' => 1,
+                ],
             ],
-            "customFieldList" => [
+            'customFieldList' => [
                 [
-                    "fieldName" => "TestField",
-                    "fieldValue" => "This is test"
-                ]
-            ]
+                    'fieldName' => 'TestField',
+                    'fieldValue' => 'This is test',
+                ],
+            ],
         ];
 
         $payload = [
-            "request" => $request,
-            "iss" => config('hbl.AccessToken'),
-            "aud" => "PacoAudience",
-            "CompanyApiKey" => config('hbl.AccessToken'),
-            "iat" => $now->unix(),
-            "nbf" => $now->unix(),
-            "exp" => $now->addHour()->unix(),
+            'request' => $request,
+            'iss' => config('hbl.AccessToken'),
+            'aud' => 'PacoAudience',
+            'CompanyApiKey' => config('hbl.AccessToken'),
+            'iat' => $now->unix(),
+            'nbf' => $now->unix(),
+            'exp' => $now->addHour()->unix(),
         ];
 
         $stringPayload = json_encode($payload);
@@ -95,15 +91,14 @@ class Payment extends ActionRequest
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
-
-        //third-party http client https://github.com/guzzle/guzzle
+        // third-party http client https://github.com/guzzle/guzzle
         $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => config('hbl.AccessToken'),
-                'Content-Type' => 'application/jose; charset=utf-8'
+                'Content-Type' => 'application/jose; charset=utf-8',
             ],
-            'body' => $body
+            'body' => $body,
         ]);
 
         $token = $response->getBody()->getContents();
