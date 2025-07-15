@@ -96,7 +96,7 @@ return [
      * 3DS (3D Secure) authentication setting.
      * Use "Y" for production, "N" for development/testing.
      */
-    'Input3DS' => (string) env('HBL_INPUT_3DS', 'N'),
+    'Input3DS' => (string) env('HBL_INPUT_3DS', 'Y'),
 
     'redirect_url' => [
         'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS', config('app.url', 'http://hbl-api.test').'/success'),

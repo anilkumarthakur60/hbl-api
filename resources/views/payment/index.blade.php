@@ -57,7 +57,21 @@
         }
     </style>
 
-
+    <!-- payment credentials -->
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Payment Credentials</h5>
+                <p class="card-text">
+                    <strong>Card Number:</strong> 5399 3300 0001 2640
+                    <br>
+                    <strong>Expiry Date:</strong> 04/27
+                    <br>
+                    <strong>CVV:</strong> 734
+                </p>
+            </div>
+        </div>
+    </div>
 
     <form id="payment_form" action="{{ route('payment.store') }}" method="get">
         @csrf

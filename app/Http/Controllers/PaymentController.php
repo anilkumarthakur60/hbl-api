@@ -22,22 +22,23 @@ class PaymentController extends Controller
 
         try {
             $amount = $request->amount ?? 1;
-            $orderNo = Str::random(15);
+            $orderNo = Str::random(16);
+            $orderDescription = 'Test Payment';
 
             $payment = new Payment;
             $joseResponse = $payment->executeFormJose(
-                mid: 9104137120,
-                api_key: '65805a1636c74b8e8ac81a991da80be4',
-                curr: 'USD',
                 amt: $amount,
-                threeD: 'Y',
-                success_url: route('payment.success'),
-                failed_url: route('payment.failed'),
-                cancel_url: route('payment.cancel'),
-                backend_url: route('payment.backend'),
+                orderNo: $orderNo,
+                orderDescription: $orderDescription,
+                additional_data: [
+                    'fullname' => 'Anil Kumar Thakur',
+                    'email' => 'anilkumarthakur60@gmail.com',
+                ],
+                purchaseItems: [
+                    'purchaseItemType' => 'ticket',
+                ],
             );
             $response = json_decode($joseResponse);
-            // dd($response);
 
             return redirect()->away($response->response->data->paymentPage->paymentPageURL);
         } catch (Exception $e) {
