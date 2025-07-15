@@ -26,18 +26,17 @@ class PaymentController extends Controller
 
             $payment = new Payment;
             $joseResponse = $payment->executeFormJose(
+                mid: 9104137120,
+                api_key: '65805a1636c74b8e8ac81a991da80be4',
+                curr: 'USD',
                 amt: $amount,
-                orderNo: $orderNo,
-                orderDescription: 'Test Payment',
-                additionalData: [
-                    'fullname' => 'Anil Kumar Thakur',
-                    'email' => 'anilkumarthakur60@gmail.com',
-                    'contact_number' => '9843262634',
-                    'amount' => $amount,
-                ],
+                threeD: 'Y',
+                success_url: route('payment.success'),
+                failed_url: route('payment.failed'),
+                cancel_url: route('payment.cancel'),
+                backend_url: route('payment.backend'),
             );
             $response = json_decode($joseResponse);
-            dd($response);
             // dd($response);
 
             return redirect()->away($response->response->data->paymentPage->paymentPageURL);
