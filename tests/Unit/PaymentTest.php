@@ -3,6 +3,7 @@
 use Anil\Hbl\Payment;
 use Anil\Hbl\SecurityData;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 // beforeEach(function () {
 //     $this->amount      = 100;
@@ -141,15 +142,16 @@ beforeEach(function () {
 
 it('actually hits the HBL sandbox and returns a well-formed response', function () {
     $json = $this->payment->executeFormJose(
-        mid: 9104137120,
-        api_key: '65805a1636c74b8e8ac81a991da80be4',
-        curr: 'USD',
         amt: 100,
-        threeD: 'Y',
-        success_url: $this->successUrl,
-        failed_url: $this->failedUrl,
-        cancel_url: $this->cancelUrl,
-        backend_url: $this->backendUrl,
+        orderNo: Str::random(15),
+        orderDescription: 'Test Payment',
+        additional_data: [
+            'fullname' => 'Anil Kumar Thakur',
+            'email' => 'anilkumarthakur60@gmail.com',
+        ],
+        purchaseItems: [
+            'purchaseItemType' => 'ticket',
+        ],
     );
     $object = json_decode($json);
 

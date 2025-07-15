@@ -6,26 +6,34 @@ use Carbon\Carbon;
 
 class Payment extends ActionRequest
 {
-    public function ExecuteFormJose($mid, $api_key, $curr, $amt, $threeD, $success_url, $failed_url, $cancel_url, $backend_url): string
+    public function ExecuteFormJose($amt, $orderNo, $orderDescription, $additional_data = [], $purchaseItems = []): string
     {
+        $custom_fields = [];
+        if (! empty($additional_data)) {
+            foreach ($additional_data as $key => $value) {
+                $custom_fields[] = [
+                    'fieldName' => $key,
+                    'fieldValue' => $value,
+                ];
+            }
+        }
         $now = Carbon::now();
-        $orderNo = $now->getPreciseTimestamp(3);
-        $amt = round($amt, 2);
+        $amt = round($amt, config('hbl.decimal_places'));
         $textAmount = str_pad(($amt == null ? 0 : $amt) * 100, 12, '0', STR_PAD_LEFT);
 
         $request = [
             'apiRequest' => [
                 'requestMessageID' => $this->Guid(),
-                'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+                'requestDateTime' => $now->utc()->toIso8601String(),
+                'language' => config('hbl.language'),
             ],
             'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
-            'productDescription' => "desc for '$orderNo'",
-            'paymentType' => 'CC',
-            'paymentCategory' => 'ECOM',
+            'productDescription' => $orderDescription,
+            'paymentType' => config('hbl.payment_type'),
+            'paymentCategory' => config('hbl.payment_category'),
             'storeCardDetails' => [
-                'storeCardFlag' => 'N',
+                'storeCardFlag' => config('hbl.store_card_flag'),
                 'storedCardUniqueID' => $this->Guid(),
             ],
             'installmentPaymentDetails' => [
@@ -33,7 +41,7 @@ class Payment extends ActionRequest
                 'installmentPeriod' => 0,
                 'interestType' => null,
             ],
-            'mcpFlag' => 'N',
+            'mcpFlag' => config('hbl.mcp_flag'),
             'request3dsFlag' => config('hbl.Input3DS'),
             'transactionAmount' => [
                 'amountText' => $textAmount,
@@ -42,38 +50,14 @@ class Payment extends ActionRequest
                 'amount' => $amt,
             ],
             'notificationURLs' => [
-                'confirmationURL' => $success_url,
-                'failedURL' => $failed_url,
-                'cancellationURL' => $cancel_url,
-                'backendURL' => $backend_url,
+                'confirmationURL' => config('hbl.redirect_url.success'),
+                'failedURL' => config('hbl.redirect_url.failed'),
+                'cancellationURL' => config('hbl.redirect_url.cancel'),
+                'backendURL' => config('hbl.redirect_url.backend'),
             ],
-            'deviceDetails' => [
-                'browserIp' => '1.0.0.1',
-                'browser' => 'Postman Browser',
-                'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-                'mobileDeviceFlag' => 'N',
-            ],
-            'purchaseItems' => [
-                [
-                    'purchaseItemType' => 'ticket',
-                    'referenceNo' => $orderNo,
-                    'purchaseItemDescription' => 'Bundled insurance',
-                    'purchaseItemPrice' => [
-                        'amountText' => $textAmount,
-                        'currencyCode' => config('hbl.InputCurrency'),
-                        'decimalPlaces' => 2,
-                        'amount' => $amt,
-                    ],
-                    'subMerchantID' => 'string',
-                    'passengerSeqNo' => 1,
-                ],
-            ],
-            'customFieldList' => [
-                [
-                    'fieldName' => 'TestField',
-                    'fieldValue' => 'This is test',
-                ],
-            ],
+            'deviceDetails' => config('hbl.device_details'),
+            'purchaseItems' => $purchaseItems,
+            'customFieldList' => $custom_fields,
         ];
 
         $payload = [
