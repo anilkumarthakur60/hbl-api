@@ -65,7 +65,7 @@ abstract class ActionRequest
         }));
 
         $this->client = new Client([
-            'base_uri' => config('hbl.EndPoint'),
+            'base_uri' => SecurityData::$EndPoint,
             'handler' => $handler,
         ]);
 
@@ -93,7 +93,7 @@ abstract class ActionRequest
             headerCheckerManager: new HeaderCheckerManager(
                 checkers: [
                     new AlgorithmChecker(
-                        supportedAlgorithms: [config('hbl.JWSAlgorithm')],
+                        supportedAlgorithms: [SecurityData::$JWSAlgorithm],
                         protectedHeader: true
                     ),
                 ],
@@ -106,7 +106,7 @@ abstract class ActionRequest
             checkers: [
                 new NotBeforeChecker,
                 new ExpirationTimeChecker,
-                new AudienceChecker(config('hbl.AccessToken')),
+                new AudienceChecker(SecurityData::$AccessToken),
                 new IssuerChecker(['PacoIssuer']),
             ]
         );
@@ -148,7 +148,7 @@ abstract class ActionRequest
             headerCheckerManager: new HeaderCheckerManager(
                 checkers: [
                     new AlgorithmChecker(
-                        supportedAlgorithms: [config('hbl.JWEAlgorithm')],
+                        supportedAlgorithms: [SecurityData::$JWEAlgorithm],
                         protectedHeader: true
                     ),
                 ],
@@ -189,8 +189,8 @@ abstract class ActionRequest
             ->create()
             ->withPayload($payload)
             ->addSignature($signingKey, [
-                'alg' => config('hbl.JWSAlgorithm'),
-                'typ' => config('hbl.TokenType'),
+                'alg' => SecurityData::$JWSAlgorithm,
+                'typ' => SecurityData::$TokenType,
             ])
             ->build();
 
@@ -199,10 +199,10 @@ abstract class ActionRequest
             ->create()
             ->withPayload($this->jwsCompactSerializer->serialize($jws))
             ->withSharedProtectedHeader([
-                'alg' => config('hbl.JWEAlgorithm'),
-                'enc' => config('hbl.JWEEncryptionAlgorithm'),
-                'kid' => config('hbl.EncryptionKeyId'),
-                'typ' => config('hbl.TokenType'),
+                'alg' => SecurityData::$JWEAlgorithm,
+                'enc' => SecurityData::$JWEEncryptionAlgorithm,
+                'kid' => SecurityData::$EncryptionKeyId,
+                'typ' => SecurityData::$TokenType,
             ])
             ->addRecipient($encryptingKey)
             ->build();
@@ -237,18 +237,15 @@ abstract class ActionRequest
      */
     protected function Guid(): string
     {
-        if (function_exists('com_create_guid')) {
-            return com_create_guid();
-        } else {
-            $charId = strtoupper(md5(uniqid(rand(), true)));
-            $hyphen = chr(45); // "-"
-            $guid = substr($charId, 0, 8).$hyphen
-                .substr($charId, 8, 4).$hyphen
-                .substr($charId, 12, 4).$hyphen
-                .substr($charId, 16, 4).$hyphen
-                .substr($charId, 20, 12);
 
-            return strtolower($guid);
-        }
+        $charId = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45); // "-"
+        $guid = substr($charId, 0, 8).$hyphen
+            .substr($charId, 8, 4).$hyphen
+            .substr($charId, 12, 4).$hyphen
+            .substr($charId, 16, 4).$hyphen
+            .substr($charId, 20, 12);
+
+        return strtolower($guid);
     }
 }

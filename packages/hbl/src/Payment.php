@@ -90,8 +90,8 @@ class Payment extends ActionRequest
             ];
 
             $stringPayload = json_encode($payload);
-            $signingKey = $this->GetPrivateKey(config('hbl.MerchantSigningPrivateKey'));
-            $encryptingKey = $this->GetPublicKey(config('hbl.PacoEncryptionPublicKey'));
+            $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
+            $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
 
             $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
@@ -106,8 +106,8 @@ class Payment extends ActionRequest
             ]);
 
             $token = $response->getBody()->getContents();
-            $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
-            $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
+            $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
+            $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
 
             return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
         } catch (\Throwable $th) {
