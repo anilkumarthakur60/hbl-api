@@ -4,6 +4,8 @@ namespace Anil\Hbl;
 
 class SecurityData
 {
+    public static int $MerchantId = 9104137120;
+
     /**
      * JWE Key Id.
      */
@@ -21,8 +23,7 @@ class SecurityData
      *
      * hdghgdad372c5426d855017aa857c469d
      */
-    // public static string $AccessToken = "hdghgdad372c5426d855017aa857c469d";
-    public static string $AccessToken = 'hdghgdad372c5426d855017aa857c469d'; // NPR/USD API KEY///////////
+    public static string $AccessToken = '65805a1636c74b8e8ac81a991da80be4'; // NPR/USD API KEY///////////
 
     /**
      * Token Type - Used in JWS and JWE header.

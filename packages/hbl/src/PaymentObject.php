@@ -5,11 +5,17 @@ namespace Anil\Hbl;
 class PaymentObject
 {
     private $order_no;
+
     private $amount;
+
     private $success_url;
+
     private $failed_url;
+
     private $cancel_url;
+
     private $backend_url;
+
     private $custom_fields;
 
     public function __construct() {}
@@ -88,13 +94,13 @@ class PaymentObject
     public function toArray()
     {
         return [
-            "order_no" => $this->getOrderNo(),
-            "amount" => $this->getAmount(),
-            "success_url" => $this->getSuccessUrl(),
-            "failed_url" => $this->getFailedUrl(),
-            "cancel_url" => $this->getCancelUrl(),
-            "backend_url" => $this->getBackendUrl(),
-            "custom_fields" => $this->getCustomFields(),
+            'order_no' => $this->getOrderNo(),
+            'amount' => $this->getAmount(),
+            'success_url' => $this->getSuccessUrl(),
+            'failed_url' => $this->getFailedUrl(),
+            'cancel_url' => $this->getCancelUrl(),
+            'backend_url' => $this->getBackendUrl(),
+            'custom_fields' => $this->getCustomFields(),
         ];
     }
 }

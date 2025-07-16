@@ -6,32 +6,31 @@ use Anil\Hbl\Payment;
 use Anil\Hbl\PaymentObject;
 use Anil\Hbl\TransactionStatus;
 use App\Models\HblResponse;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 class PaymentController extends Controller
 {
     /**
-     * @throws GuzzleException
+     * @throws GuzzleException|Throwable
      */
     public function store(Request $request)
     {
 
-        $paymentObj = new PaymentObject();
+        $paymentObj = new PaymentObject;
         $paymentObj->setOrderNo(Str::random(15));
         $paymentObj->setAmount(1);
-        $paymentObj->setSuccessUrl("http://hbl-laravel-demo.test/success");
-        $paymentObj->setCancelUrl("http://hbl-laravel-demo.test/cancel");
-        $paymentObj->setBackendUrl("http://hbl-laravel-demo.test/backend");
-        $paymentObj->setFailedUrl("http://hbl-laravel-demo.test/failed");
+        $paymentObj->setSuccessUrl('http://hbl-api.test/success');
+        $paymentObj->setCancelUrl('http://hbl-api.test/cancel');
+        $paymentObj->setBackendUrl('http://hbl-api.test/backend');
+        $paymentObj->setFailedUrl('http://hbl-api.test/failed');
         $paymentObj->setCustomFields([
-            "refId" => "123"
+            'refId' => '123',
         ]);
 
-        $payment = new Payment();
+        $payment = new Payment;
         $response = $payment->executeFormJose($paymentObj->toArray());
 
         $response = json_decode($response);
@@ -63,7 +62,6 @@ class PaymentController extends Controller
 
         $responses = HblResponse::query()->latest()->get();
 
-
         return view('payment.index', compact('responses'));
     }
 
@@ -77,7 +75,6 @@ class PaymentController extends Controller
         ]);
 
         $responses = HblResponse::query()->latest()->get();
-
 
         return view('payment.index', compact('responses'));
     }
@@ -93,7 +90,6 @@ class PaymentController extends Controller
 
         $responses = HblResponse::query()->latest()->get();
 
-
         return view('payment.index', compact('responses'));
     }
 
@@ -104,10 +100,13 @@ class PaymentController extends Controller
         return view('payment.index', compact('responses'));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function status($orderNo)
     {
         $hbl = new TransactionStatus;
-        $response = $hbl->Execute($orderNo);
+        $response = $hbl->execute($orderNo);
         $response = json_decode($response);
 
         return response()->json($response);

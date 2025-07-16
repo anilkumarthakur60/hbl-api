@@ -6,12 +6,20 @@ use Anil\Hbl\Payment;
 use App\Models\HblResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PaymentController1 extends Controller
 {
     public function store(Request $request)
     {
 
+        //         order_no
+        // amount
+        // success_url
+        // failed_url
+        // cancel_url
+        // backend_url
+        // custom_fields
         try {
             $success_url = config('app.url').'/success';
             $failed_url = config('app.url').'/failed';
@@ -20,16 +28,19 @@ class PaymentController1 extends Controller
             $amount = $request->amount ?? 1;
 
             $payment = new Payment;
-            $joseResponse = $payment->ExecuteFormJose(
-                mid: config('hbl.OfficeId'),
-                api_key: config('hbl.AccessToken'),
-                curr: 'NPR',
-                amt: $amount,
-                threeD: 'Y',
-                success_url: $success_url,
-                failed_url: $failed_url,
-                cancel_url: $cancel_url,
-                backend_url: $backend_url,
+            $joseResponse = $payment->executeFormJose(
+                [
+                    'order_no' => Str::random(15),
+                    'amount' => 1,
+                    'success_url' => config('app.url').'/success',
+                    'failed_url' => config('app.url').'/failed',
+                    'cancel_url' => config('app.url').'/cancel',
+                    'backend_url' => config('app.url').'/backend',
+                    'custom_fields' => [
+                        'fullname' => 'Anil Kumar Thakur',
+                        'email' => 'anilkumarthakur60@gmail.com',
+                    ],
+                ]
             );
             $response = json_decode($joseResponse);
 

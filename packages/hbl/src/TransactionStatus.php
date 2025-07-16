@@ -9,7 +9,7 @@ class TransactionStatus extends ActionRequest
     /**
      * @throws GuzzleException
      */
-    public function Execute($orderNo): string
+    public function execute($orderNo): string
     {
         $response = $this->client->get('api/2.0/Inquiry/TransactionStatus', [
             'headers' => [
