@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
-use Anil\Hbl\PaymentObject;
 use Anil\Hbl\TransactionStatus;
 use App\Models\HblResponse;
 use GuzzleHttp\Exception\GuzzleException;
@@ -18,20 +17,22 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-
-        $paymentObj = new PaymentObject;
-        $paymentObj->setOrderNo(Str::random(15));
-        $paymentObj->setAmount(1);
-        $paymentObj->setSuccessUrl('http://hbl-api.test/success');
-        $paymentObj->setCancelUrl('http://hbl-api.test/cancel');
-        $paymentObj->setBackendUrl('http://hbl-api.test/backend');
-        $paymentObj->setFailedUrl('http://hbl-api.test/failed');
-        $paymentObj->setCustomFields([
-            'refId' => '123',
-        ]);
-
+        $url = config('app.url');
         $payment = new Payment;
-        $response = $payment->executeFormJose($paymentObj->toArray());
+        $response = $payment->executeFormJose(
+            [
+                'order_no' => Str::random(15),
+                'amount' => 1,
+                'success_url' => "{$url}/success'",
+                'failed_url' => "{$url}/failed",
+                'cancel_url' => "{$url}/cancel",
+                'backend_url' => "{$url}/backend'",
+                'custom_fields' => [
+                    'fullName' => 'Anil Kumar Thakur',
+                    'email' => 'anilkumarthakur60@gmail.com',
+                ],
+            ]
+        );
 
         $response = json_decode($response);
 
