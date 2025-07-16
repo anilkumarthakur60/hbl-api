@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
+use Anil\Hbl\PaymentObject;
 use Anil\Hbl\TransactionStatus;
 use App\Models\HblResponse;
 use Exception;
@@ -10,7 +11,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use RealRashid\SweetAlert\Facades\Alert;
 
 class PaymentController extends Controller
 {
@@ -20,31 +20,23 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
 
-        try {
-            $amount = $request->amount ?? 1;
-            $orderNo = Str::random(16);
-            $orderDescription = 'Test Payment';
+        $paymentObj = new PaymentObject();
+        $paymentObj->setOrderNo(Str::random(15));
+        $paymentObj->setAmount(1);
+        $paymentObj->setSuccessUrl("http://hbl-laravel-demo.test/success");
+        $paymentObj->setCancelUrl("http://hbl-laravel-demo.test/cancel");
+        $paymentObj->setBackendUrl("http://hbl-laravel-demo.test/backend");
+        $paymentObj->setFailedUrl("http://hbl-laravel-demo.test/failed");
+        $paymentObj->setCustomFields([
+            "refId" => "123"
+        ]);
 
-            $payment = new Payment;
-            $joseResponse = $payment->executeFormJose(
-                amt: $amount,
-                orderNo: $orderNo,
-                orderDescription: $orderDescription,
-                additional_data: [
-                    'fullname' => 'Anil Kumar Thakur',
-                    'email' => 'anilkumarthakur60@gmail.com',
-                ],
-                purchaseItems: [
-                    'purchaseItemType' => 'ticket',
-                ],
-            );
-            $response = json_decode($joseResponse);
+        $payment = new Payment();
+        $response = $payment->executeFormJose($paymentObj->toArray());
 
-            return redirect()->away($response->response->data->paymentPage->paymentPageURL);
-        } catch (Exception $e) {
-            Log::error($e);
-            dd($e);
-        }
+        $response = json_decode($response);
+
+        return redirect()->away($response->response->data->paymentPage->paymentPageURL);
     }
 
     public function success(Request $request)
@@ -56,8 +48,6 @@ class PaymentController extends Controller
             'status' => 'success',
         ]);
         $responses = HblResponse::query()->latest()->get();
-
-        Alert::success('Payment successful', "Payment successful for order no: $request->orderNo");
 
         return view('payment.index', compact('responses'));
     }
@@ -73,7 +63,6 @@ class PaymentController extends Controller
 
         $responses = HblResponse::query()->latest()->get();
 
-        Alert::error('Payment failed', "Payment failed for order no: $request->orderNo");
 
         return view('payment.index', compact('responses'));
     }
@@ -89,7 +78,6 @@ class PaymentController extends Controller
 
         $responses = HblResponse::query()->latest()->get();
 
-        Alert::error('Payment cancelled', "Payment cancelled for order no: $request->orderNo");
 
         return view('payment.index', compact('responses'));
     }
@@ -105,7 +93,6 @@ class PaymentController extends Controller
 
         $responses = HblResponse::query()->latest()->get();
 
-        Alert::error('Payment backend', "Payment backend for order no: $request->orderNo");
 
         return view('payment.index', compact('responses'));
     }
@@ -113,7 +100,6 @@ class PaymentController extends Controller
     public function index()
     {
         $responses = HblResponse::query()->latest()->get();
-        Alert::info('Payment index', 'Payment index for order no: ');
 
         return view('payment.index', compact('responses'));
     }

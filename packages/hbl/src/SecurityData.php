@@ -16,9 +16,13 @@ class SecurityData
      * 87075a8448b811edaf360279bcee2f04
      * NPR
      * 94e92b1059b211edaf360279bcee2f04
+     *
+     * 65805a1636c74b8e8ac81a991da80be4
+     *
+     * hdghgdad372c5426d855017aa857c469d
      */
     // public static string $AccessToken = "hdghgdad372c5426d855017aa857c469d";
-    public static string $AccessToken = '65805a1636c74b8e8ac81a991da80be4'; // NPR/USD API KEY///////////
+    public static string $AccessToken = 'hdghgdad372c5426d855017aa857c469d'; // NPR/USD API KEY///////////
 
     /**
      * Token Type - Used in JWS and JWE header.

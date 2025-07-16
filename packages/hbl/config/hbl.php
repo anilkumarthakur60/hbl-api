@@ -2,121 +2,84 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | HBL Payment Gateway Configuration
-    |--------------------------------------------------------------------------
-    |
-    | This file holds all necessary settings to integrate with the HBL payment
-    | gateway using PACO encryption and signature standards.
-    |
-    */
+    "OfficeId" => env('HBL_OFFICE_ID', '9104137120'),
 
     /**
-     * Merchant's unique Office ID provided by HBL.
+     * payment end point
      */
-    'OfficeId' => (string) env('HBL_OFFICE_ID'),
+    "EndPoint" => "https://core.demo-paco.2c2p.com",
 
     /**
-     * Payment request endpoint URL.
+     * JWE Key Id.
+     *
      */
-    'EndPoint' => (string) env('HBL_END_POINT', 'https://core.demo-paco.2c2p.com'),
+    "EncryptionKeyId" => "7664a2ed0dee4879bdfca0e8ce1ac313",
 
     /**
-     * OAuth 2.0 access token used for authentication.
+     * Access Token.
+     *
      */
-    'AccessToken' => (string) env('HBL_ACCESS_TOKEN'),
+    "AccessToken" => env('HBL_ACCESS_TOKEN', '65805a1636c74b8e8ac81a991da80be4'),
 
     /**
-     * Token type used in Authorization headers (usually "JWT").
+     * Token Type - Used in JWS and JWE header.
+     *
      */
-    'TokenType' => (string) env('HBL_TOKEN_TYPE', 'JWT'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Encryption and Signature Configuration
-    |--------------------------------------------------------------------------
-    */
+    "TokenType" => "JWT",
 
     /**
-     * Unique identifier for the encryption key (provided by HBL).
+     * JWS (JSON Web Signature) Signature Algorithm - This parameter identifies the cryptographic algorithm used to
+     * secure the JWS.
+     *
      */
-    'EncryptionKeyId' => (string) env('HBL_ENCRYPTION_KEY_ID', '7664a2ed0dee4879bdfca0e8ce1ac313'),
+    "JWSAlgorithm" => "PS256",
 
     /**
-     * JWS (JSON Web Signature) signing algorithm.
-     * Recommended: PS256 (RSASSA-PSS using SHA-256).
+     * JWE (JSON Web Encryption) Key Encryption Algorithm - This parameter identifies the cryptographic algorithm
+     * used to secure the JWE.
+     *
      */
-    'JWSAlgorithm' => (string) env('HBL_JWS_ALGORITHM', 'PS256'),
+    "JWEAlgorithm" => "RSA-OAEP",
 
     /**
-     * JWE (JSON Web Encryption) key encryption algorithm.
-     * Recommended: RSA-OAEP.
+     * JWE (JSON Web Encryption) Content Encryption Algorithm - This parameter identifies the content encryption
+     * algorithm used on the plaintext to produce the encrypted ciphertext.
+     *
      */
-    'JWEAlgorithm' => (string) env('HBL_JWE_ALGORITHM', 'RSA-OAEP'),
+    "JWEEncryptionAlgorithm" => "A128CBC-HS256",
+
 
     /**
-     * JWE content encryption algorithm.
-     * Recommended: A128CBC-HS256.
+     * PACO Encryption Public Key is used to cryptographically encrypt and create the request JWE.
+     *
      */
-    'JWEEncryptionAlgorithm' => (string) env('HBL_JWE_ENCRYPTION_ALGORITHM', 'A128CBC-HS256'),
+    "PacoEncryptionPublicKey" => "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAviq4wrTmVMkRHouiHLUonJ1d6ss6nNreJ0JWpLwmTwAM7l35g8AFIvE8PqwWevtjuil9JZ1T1zwQTP8aM3s5/RzX5yFIhec/O14jib7Nmi4jACeJqDlHsnYzeCPw8WOhgmxWKHcORNLpn68jgnhLrKwh3Mooz/hXtIwGuNe/pYU7i/QaiuOjtmIcQ3yxJWjiHsllaogobZjbwMzwhp1fJ6ELmZp0FJvDrE8dn4UU9yzPFNzQ4gJzJAS/JKLXjfDw5mDQdw80vbzYuxksU0bc/3+DwY6hqaVJsP2AST7dCTR1wYzevzPxp0HMDmz1Ia/hSrmTPRhSa0qvxHMriVHUJvJeLTNI3cWM0RI9ukR7/v6vcf8ZwOZ+u7w4YfLpPCQFN7zGUN9Hho0pWBVYOstqsF5h/ZgBOlEHgSYY3CJdscV1+vKUvmFPiwkOdVxhc571RX56o+V71ZIGjXeYeqd3KNnND1JNsOn4hRPbk8Cl0e8CfZnEePfqtbFQGrzRU3GvSXscMb51TlvZu9i0toJdIJ4DiOCkUlB2sDI4x7N9ROOEbAD8uv68/jZqTM2paUNRN7Xvaa2LUCis3acadiyLt0tpuOT0sY2OejhLJshwNfTfc67gdtCJ3diddZWkXYpBgkMhuVj3TSx85sUklbGGJkzkwNsC0JhMSo7ZqbYxczECAwEAAQ==",
 
     /**
-     * Merchant's private key used to sign JWS (Base64-encoded PEM).
+     * PACO Signing Public Key is used to cryptographically verify the response JWS signature.
+     *
      */
-    'MerchantSigningPrivateKey' => (string) env('HBL_MERCHANT_SIGNING_PRIVATE_KEY'),
+    "PacoSigningPublicKey" => "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkEOCDQxCbyv/n1jadyDDL9KLRddF7W2eVNf7GwVeqlq3CVor0QHiU+yweO3b622NZAPDBy/GFeJJH5lwdJUbYojFWtHUqYN7/HoTHF50KhAbLMhnllsULuyVgG1l3m9xSjRJtQSaIZP5jF4LSM+m69Xd7U2qoTczMOaNZ36yWZzxN/OUQMjb2cWeZCLhVPf6zJwA35kC57NK2n1DDvvyFvLnh9gBd8EOkJuT9us1r01Ya3XpFHhXy1fTg9bmWXDMwMm5stnhmGOF2d6Uv4rYGqk67nRzX0ZEGrWW6X0tzeQESkQShx0algKIXeM/2RBfit1QHDHhI70CYTqt1eG05Cpr5u7FdvD4pk8fqfW8xJsmoZisQNQnov0oriUqrB1wZvWL8+calfoX0nxWMVlP37LspA6O2+dlnjFxpDQSjnfWVFyS6fKvr8jXWI6KG6L11J+yAXY4KjqGK+wEnH2yf8tK8NLkIAWNstlUQrycEkk4mP6ElKwkOMpRND0ArG1cG0uMx+VXd1vrWG6UePa+GHmgHbgLSkjI3hpz3wbpE5cbp73dbIgryeC0AeLY7kKDt7pMQpkg3gNxcvTGXjZYc1TQ5siuD1RBJUR5Lv/P8jjyQnB4D67AEuL1pw5acKQ3tfOEF+iuzzzV5zeSj5T5rYR1GpuPOqTz97AWSxawDUsCAwEAAQ==",
 
     /**
-     * Merchant's private key used to decrypt JWE responses (Base64-encoded PEM).
+     * Merchant Decryption Private Key used to cryptographically decrypt the response JWE.
      */
-    'MerchantDecryptionPrivateKey' => (string) env('HBL_MERCHANT_DECRYPTION_PRIVATE_KEY'),
+    "MerchantDecryptionPrivateKey" => env('HBL_PRIVATE_KEY_JWE'),
 
     /**
-     * PACO's public key used to encrypt requests (JWE).
+     * Merchant Signing Private Key is used to cryptographically sign and create the request JWS.
+     *
      */
-    'PacoEncryptionPublicKey' => (string) env('HBL_PACO_ENCRYPTION_PUBLIC_KEY'),
+    "MerchantSigningPrivateKey" => env('HBL_PRIVATE_KEY_JWS'),
+
 
     /**
-     * PACO's public key used to verify JWS signatures.
+     * Input Currecy for example USD or NRP.
      */
-    'PacoSigningPublicKey' => (string) env('HBL_PACO_SIGNING_PUBLIC_KEY'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Transaction Settings
-    |--------------------------------------------------------------------------
-    */
+    "InputCurrency" => "NPR",
 
     /**
-     * Currency for the transaction (e.g., "NPR", "USD").
+     * Input 3DS should be Y for production and N for development
      */
-    'InputCurrency' => (string) env('HBL_INPUT_CURRENCY', 'NPR'),
-
-    /**
-     * 3DS (3D Secure) authentication setting.
-     * Use "Y" for production, "N" for development/testing.
-     */
-    'Input3DS' => (string) env('HBL_INPUT_3DS', 'Y'),
-
-    'redirect_url' => [
-        'success' => (string) env('HBL_JOSE_REDIRECT_URL_SUCCESS', config('app.url', 'http://hbl-api.test').'/success'),
-        'failed' => (string) env('HBL_JOSE_REDIRECT_URL_FAILED', config('app.url', 'http://hbl-api.test').'/failed'),
-        'cancel' => (string) env('HBL_JOSE_REDIRECT_URL_CANCEL', config('app.url', 'http://hbl-api.test').'/cancel'),
-        'backend' => (string) env('HBL_JOSE_REDIRECT_URL_BACKEND', config('app.url', 'http://hbl-api.test').'/backend'),
-    ],
-
-    // language
-    'language' => (string) env('HBL_LANGUAGE', 'en-US'),
-    'payment_type' => (string) env('HBL_PAYMENT_TYPE', 'CC'),
-    'payment_category' => (string) env('HBL_PAYMENT_CATEGORY', 'ECOM'),
-    'store_card_flag' => (string) env('HBL_STORE_CARD_FLAG', 'N'),
-    'mcp_flag' => (string) env('HBL_MCP_FLAG', 'N'),
-    'decimal_places' => (int) env('HBL_DECIMAL_PLACES', 2),
-    'device_details' => [
-        'browserIp' => '1.0.0.1',
-        'browser' => 'Postman Browser',
-        'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-        'mobileDeviceFlag' => 'N',
-    ],
-    'purchaseItemType' => (string) env('HBL_PURCHASE_ITEM_TYPE', 'ticket'),
+    "Input3DS" => "N",
 ];
