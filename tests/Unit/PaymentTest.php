@@ -4,22 +4,24 @@ use Anil\Hbl\Payment;
 use Anil\Hbl\SecurityData;
 use Illuminate\Support\Str;
 
-beforeEach(/**
- * @throws Exception
- */ function () {
-    $this->merchantId = SecurityData::$MerchantId;
-    $this->apiKey = config('hbl.AccessToken');
-    $this->baseUrl = config('hbl.EndPoint');
-    if (! $this->merchantId || ! $this->apiKey || ! $this->baseUrl) {
-        throw new Exception('HBL integration credentials or URL not configured in .env');
-    }
-    $this->payment = new Payment;
-    $appUrl = rtrim(config('app.url'), '/');
-    $this->successUrl = "{$appUrl}/success";
-    $this->failedUrl = "{$appUrl}/failed";
-    $this->cancelUrl = "{$appUrl}/cancel";
-    $this->backendUrl = "{$appUrl}/backend";
-});
+beforeEach(
+    /**
+     * @throws Exception
+     */
+    function () {
+        $this->merchantId = SecurityData::$MerchantId;
+        $this->apiKey = config('hbl.AccessToken');
+        $this->baseUrl = config('hbl.EndPoint');
+        if (! $this->merchantId || ! $this->apiKey || ! $this->baseUrl) {
+            throw new Exception('HBL integration credentials or URL not configured in .env');
+        }
+        $this->payment = new Payment;
+        $appUrl = rtrim(config('app.url'), '/');
+        $this->successUrl = "{$appUrl}/success";
+        $this->failedUrl = "{$appUrl}/failed";
+        $this->cancelUrl = "{$appUrl}/cancel";
+        $this->backendUrl = "{$appUrl}/backend";
+    });
 
 it('actually hits the HBL sandbox and returns a well-formed response', function () {
     $json = $this->payment->executeFormJose(
