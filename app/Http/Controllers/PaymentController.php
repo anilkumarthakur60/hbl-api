@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Anil\Hbl\Inquiry;
 use Anil\Hbl\Payment;
+use Anil\Hbl\Refund;
+use Anil\Hbl\Settlement;
 use Anil\Hbl\TransactionStatus;
+use Anil\Hbl\VoidRequest;
 use App\Models\HblResponse;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
@@ -118,5 +122,39 @@ class PaymentController extends Controller
         $response->delete();
 
         return redirect()->route('payment.index')->with('success', 'Response deleted successfully');
+    }
+
+    public function refund()
+    {
+        $hbl = new Refund;
+        $response = $hbl->executeJose();
+        $response = json_decode($response);
+        dd($response);
+
+        return response()->json($response);
+    }
+
+    public function void($orderNo)
+    {
+        $hbl = new VoidRequest;
+        $response = $hbl->executeJose();
+        $response = json_decode($response);
+        dd($response);
+    }
+
+    public function settlement($orderNo)
+    {
+        $hbl = new Settlement;
+        $response = $hbl->executeJose();
+        $response = json_decode($response);
+        dd($response);
+    }
+
+    public function inquiry($orderNo)
+    {
+        $hbl = new Inquiry;
+        $response = $hbl->executeJose();
+        $response = json_decode($response);
+        dd($response);
     }
 }
