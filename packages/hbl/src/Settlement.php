@@ -9,43 +9,6 @@ class Settlement extends ActionRequest
 {
     /**
      * @throws GuzzleException
-     */
-    public function Execute(): string
-    {
-        $orderNo = '1643362945100'; // OrderNo can be Refund/Void one time
-        $productDescription = 'Sample request for 1643362945100';
-
-        $request = [
-            'officeId' => config('hbl.OfficeId'),
-            'orderNo' => $orderNo,
-            'productDescription' => $productDescription,
-            'issuerApprovalCode' => '141857', // approvalCode of order place (Payment api) response
-            'actionBy' => 'System',
-            'settlementAmount' => [
-                'amountText' => '000000100000',
-                'currencyCode' => 'THB',
-                'decimalPlaces' => 2,
-                'amount' => 1000.00,
-            ],
-        ];
-
-        $stringRequest = json_encode($request);
-
-        // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->put('api/2.0/Settlement', [
-            'headers' => [
-                'Accept' => 'application/json',
-                'apiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/json; charset=utf-8',
-            ],
-            'body' => $stringRequest,
-        ]);
-
-        return $response->getBody()->getContents();
-    }
-
-    /**
-     * @throws GuzzleException
      * @throws Exception
      */
     public function ExecuteJose(): string

@@ -9,44 +9,6 @@ class VoidRequest extends ActionRequest
 {
     /**
      * @throws GuzzleException
-     */
-    public function Execute(): string
-    {
-        $officeId = 9104137120;
-        $orderNo = '1643362945102'; // OrderNo can be Refund/Void one time only
-        $productDescription = 'Sample request for 1643362945102';
-
-        $request = [
-            'officeId' => $officeId,
-            'orderNo' => $orderNo,
-            'productDescription' => $productDescription,
-            'issuerApprovalCode' => '140331', // approvalCode of order place (Payment api) response
-            'actionBy' => 'System',
-            'voidAmount' => [
-                'amountText' => '000000100000',
-                'currencyCode' => 'THB',
-                'decimalPlaces' => 2,
-                'amount' => 1000.00,
-            ],
-        ];
-
-        $stringRequest = json_encode($request);
-
-        // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/2.0/Void', [
-            'headers' => [
-                'Accept' => 'application/json',
-                'apiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/json; charset=utf-8',
-            ],
-            'body' => $stringRequest,
-        ]);
-
-        return $response->getBody()->getContents();
-    }
-
-    /**
-     * @throws GuzzleException
      * @throws Exception
      */
     public function ExecuteJose(): string

@@ -9,52 +9,6 @@ class Refund extends ActionRequest
 {
     /**
      * @throws GuzzleException
-     */
-    public function Execute(): string
-    {
-        $officeId = 9104137120;
-        $orderNo = '1643362945100'; // OrderNo can be Refund one time only
-
-        $actionBy = 'System|c88ef0dc-14ea-4556-922b-7f62a6a3ec9e';
-        $actionEmail = 'babulal.cho@2c2pexternal.com';
-
-        $request = [
-            'refundAmount' => [
-                'AmountText' => '000000100000',
-                'CurrencyCode' => 'THB',
-                'DecimalPlaces' => 2,
-                'Amount' => 1000.00,
-            ],
-            'refundItems' => [],
-            'localMakerChecker' => [
-                'maker' => [
-                    'username' => $actionBy,
-                    'email' => $actionEmail,
-                ],
-            ],
-            'officeId' => $officeId,
-            'orderNo' => $orderNo,
-        ];
-
-        $stringRequest = json_encode($request);
-
-        echo $stringRequest;
-
-        // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/2.0/Refund/refund', [
-            'headers' => [
-                'Accept' => 'application/json',
-                'apiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/json; charset=utf-8',
-            ],
-            'body' => $stringRequest,
-        ]);
-
-        return $response->getBody()->getContents();
-    }
-
-    /**
-     * @throws GuzzleException
      * @throws Exception
      */
     public function ExecuteJose(): string

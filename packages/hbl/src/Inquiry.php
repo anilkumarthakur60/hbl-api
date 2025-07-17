@@ -9,53 +9,6 @@ class Inquiry extends ActionRequest
 {
     /**
      * @throws GuzzleException
-     */
-    public function Execute(): string
-    {
-        $now = Carbon::now();
-
-        $officeId = 9104137120;
-        $orderNo = '1635476979216';
-
-        $request = [
-            'apiRequest' => [
-                'requestMessageID' => $this->Guid(),
-                'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => config('hbl.language'),
-            ],
-            'advSearchParams' => [
-                'controllerInternalID' => null,
-                'officeId' => [
-                    $officeId,
-                ],
-                'orderNo' => [
-                    "$orderNo",
-                ],
-                'invoiceNo2C2P' => null,
-                'fromDate' => '0001-01-01T00:00:00',
-                'toDate' => '0001-01-01T00:00:00',
-                'amountFrom' => null,
-                'amountTo' => null,
-            ],
-        ];
-
-        $stringRequest = json_encode($request);
-
-        // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/2.0/Inquiry/transactionList', [
-            'headers' => [
-                'Accept' => 'application/json',
-                'apiKey' => SecurityData::$AccessToken,
-                'Content-Type' => 'application/json; charset=utf-8',
-            ],
-            'body' => $stringRequest,
-        ]);
-
-        return $response->getBody()->getContents();
-    }
-
-    /**
-     * @throws GuzzleException
      * @throws Exception
      */
     public function ExecuteJose(): string
