@@ -17,16 +17,15 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $url = config('app.url');
         $payment = new Payment;
         $response = $payment->executeFormJose(
             [
                 'order_no' => Str::random(15),
                 'amount' => 1,
-                'success_url' => "{$url}/success'",
-                'failed_url' => "{$url}/failed",
-                'cancel_url' => "{$url}/cancel",
-                'backend_url' => "{$url}/backend'",
+                'success_url' => route('payment.success'),
+                'failed_url' => route('payment.failed'),
+                'cancel_url' => route('payment.cancel'),
+                'backend_url' => route('payment.backend'),
                 'custom_fields' => [
                     'fullName' => 'Anil Kumar Thakur',
                     'email' => 'anilkumarthakur60@gmail.com',

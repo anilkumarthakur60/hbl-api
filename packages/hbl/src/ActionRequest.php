@@ -11,9 +11,7 @@ use Jose\Component\Checker\AudienceChecker;
 use Jose\Component\Checker\ClaimCheckerManager;
 use Jose\Component\Checker\ExpirationTimeChecker;
 use Jose\Component\Checker\HeaderCheckerManager;
-use Jose\Component\Checker\InvalidClaimException;
 use Jose\Component\Checker\IssuerChecker;
-use Jose\Component\Checker\MissingMandatoryClaimException;
 use Jose\Component\Checker\NotBeforeChecker;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
@@ -213,8 +211,6 @@ abstract class ActionRequest
     /**
      * Decrypts a JOSE Token and returns plain text payload
      *
-     * @throws InvalidClaimException
-     * @throws MissingMandatoryClaimException
      * @throws Exception
      */
     protected function DecryptToken(string $token, JWK $decryptingKey, JWK $signatureVerificationKey): string
