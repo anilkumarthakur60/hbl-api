@@ -12,12 +12,11 @@ class Settlement extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = 'DEMOOFFICE';
         $orderNo = '1643362945100'; // OrderNo can be Refund/Void one time
         $productDescription = 'Sample request for 1643362945100';
 
         $request = [
-            'officeId' => $officeId,
+            'officeId' => config('hbl.OfficeId'),
             'orderNo' => $orderNo,
             'productDescription' => $productDescription,
             'issuerApprovalCode' => '141857', // approvalCode of order place (Payment api) response
@@ -33,7 +32,7 @@ class Settlement extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->put('api/1.0/Settlement', [
+        $response = $this->client->put('api/2.0/Settlement', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -52,7 +51,7 @@ class Settlement extends ActionRequest
     public function ExecuteJose(): string
     {
         $now = Carbon::now();
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100';
         $productDescription = 'Sample request for 1643362945100';
 
@@ -87,7 +86,7 @@ class Settlement extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->put('api/1.0/Settlement', [
+        $response = $this->client->put('api/2.0/Settlement', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -97,8 +96,8 @@ class Settlement extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-        $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

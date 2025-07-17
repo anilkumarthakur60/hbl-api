@@ -2,8 +2,8 @@
 
 namespace Anil\Hbl;
 
-use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Carbon;
 
 class Inquiry extends ActionRequest
 {
@@ -14,14 +14,14 @@ class Inquiry extends ActionRequest
     {
         $now = Carbon::now();
 
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1635476979216';
 
         $request = [
             'apiRequest' => [
                 'requestMessageID' => $this->Guid(),
                 'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                'language' => 'en-US',
+                'language' => config('hbl.language'),
             ],
             'advSearchParams' => [
                 'controllerInternalID' => null,
@@ -42,7 +42,7 @@ class Inquiry extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Inquiry/transactionList', [
+        $response = $this->client->post('api/2.0/Inquiry/transactionList', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -62,7 +62,7 @@ class Inquiry extends ActionRequest
     {
         $now = Carbon::now();
 
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1635476979216';
 
         $request = [
@@ -104,7 +104,7 @@ class Inquiry extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Inquiry/transactionList', [
+        $response = $this->client->post('api/2.0/Inquiry/transactionList', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -114,8 +114,8 @@ class Inquiry extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-        $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

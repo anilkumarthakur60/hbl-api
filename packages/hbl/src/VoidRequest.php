@@ -1,7 +1,7 @@
 <?php
 
-use Anil\Hbl\ActionRequest;
-use Anil\Hbl\SecurityData;
+namespace Anil\Hbl;
+
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -12,7 +12,7 @@ class VoidRequest extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945102'; // OrderNo can be Refund/Void one time only
         $productDescription = 'Sample request for 1643362945102';
 
@@ -33,7 +33,7 @@ class VoidRequest extends ActionRequest
         $stringRequest = json_encode($request);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Void', [
+        $response = $this->client->post('api/2.0/Void', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -52,7 +52,7 @@ class VoidRequest extends ActionRequest
     public function ExecuteJose(): string
     {
         $now = Carbon::now();
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945102'; // OrderNo can be Refund/Void one time only
         $productDescription = 'Sample request for 1643362945102';
 
@@ -87,7 +87,7 @@ class VoidRequest extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Void', [
+        $response = $this->client->post('api/2.0/Void', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -97,8 +97,8 @@ class VoidRequest extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-        $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

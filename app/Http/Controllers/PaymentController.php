@@ -3,60 +3,121 @@
 namespace App\Http\Controllers;
 
 use Anil\Hbl\Payment;
-use Anil\Hbl\PaymentObject;
+use Anil\Hbl\TransactionStatus;
+use App\Models\HblResponse;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Throwable;
 
 class PaymentController extends Controller
 {
+    /**
+     * @throws GuzzleException|Throwable
+     */
     public function store(Request $request)
     {
+        $url = config('app.url');
+        $payment = new Payment;
+        $response = $payment->executeFormJose(
+            [
+                'order_no' => Str::random(15),
+                'amount' => 1,
+                'success_url' => "{$url}/success'",
+                'failed_url' => "{$url}/failed",
+                'cancel_url' => "{$url}/cancel",
+                'backend_url' => "{$url}/backend'",
+                'custom_fields' => [
+                    'fullName' => 'Anil Kumar Thakur',
+                    'email' => 'anilkumarthakur60@gmail.com',
+                ],
+            ]
+        );
 
-        try {
-            $success_url = config('app.url').'/success';
-            $failed_url = config('app.url').'/failed';
-            $cancel_url = config('app.url').'/cancel';
-            $backend_url = config('app.url').'/backend';
-            $order_no = (string) Str::random(15);
-            $amount = 100;
+        $response = json_decode($response);
 
-            $paymentObj = new PaymentObject;
-            $paymentObj->setOrderNo($order_no);
-            $paymentObj->setAmount($amount);
-            $paymentObj->setSuccessUrl($success_url);
-            $paymentObj->setCancelUrl($cancel_url);
-            $paymentObj->setBackendUrl($backend_url);
-            $paymentObj->setFailedUrl($failed_url);
-            $paymentObj->setCustomFields([
-                'refId' => (string) Str::random(15),
-            ]);
-            $payment = new Payment;
-            $joseResponse = $payment->ExecuteFormJose($paymentObj);
-            $response = json_decode($joseResponse);
-
-            return redirect()->away($response->response->data->paymentPage->paymentPageURL);
-        } catch (\Exception $e) {
-            dd($e);
-        }
+        return redirect()->away($response->response->data->paymentPage->paymentPageURL);
     }
 
     public function success(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'success',
+        ]);
+        $responses = HblResponse::query()->latest()->get();
+
+        return view('payment.index', compact('responses'));
     }
 
     public function failed(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'failed',
+        ]);
+
+        $responses = HblResponse::query()->latest()->get();
+
+        return view('payment.index', compact('responses'));
     }
 
     public function cancel(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'cancel',
+        ]);
+
+        $responses = HblResponse::query()->latest()->get();
+
+        return view('payment.index', compact('responses'));
     }
 
     public function backend(Request $request)
     {
-        dd($request->all());
+        $response = HblResponse::firstOrCreate([
+            'order_no' => $request->orderNo,
+        ], [
+            'response' => $request->all(),
+            'status' => 'backend',
+        ]);
+
+        $responses = HblResponse::query()->latest()->get();
+
+        return view('payment.index', compact('responses'));
+    }
+
+    public function index()
+    {
+        $responses = HblResponse::query()->latest()->get();
+
+        return view('payment.index', compact('responses'));
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function status($orderNo)
+    {
+        $hbl = new TransactionStatus;
+        $response = $hbl->execute($orderNo);
+        $response = json_decode($response);
+
+        return response()->json($response);
+    }
+
+    public function delete($orderNo)
+    {
+        $response = HblResponse::where('order_no', $orderNo)->firstOrFail();
+        $response->delete();
+
+        return redirect()->route('payment.index')->with('success', 'Response deleted successfully');
     }
 }

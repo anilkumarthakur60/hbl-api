@@ -12,7 +12,7 @@ class Refund extends ActionRequest
      */
     public function Execute(): string
     {
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100'; // OrderNo can be Refund one time only
 
         $actionBy = 'System|c88ef0dc-14ea-4556-922b-7f62a6a3ec9e';
@@ -41,7 +41,7 @@ class Refund extends ActionRequest
         echo $stringRequest;
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Refund/refund', [
+        $response = $this->client->post('api/2.0/Refund/refund', [
             'headers' => [
                 'Accept' => 'application/json',
                 'apiKey' => SecurityData::$AccessToken,
@@ -60,7 +60,7 @@ class Refund extends ActionRequest
     public function ExecuteJose(): string
     {
         $now = Carbon::now();
-        $officeId = 'DEMOOFFICE';
+        $officeId = 9104137120;
         $orderNo = '1643362945100'; // OrderNo can be Refund one time only
 
         $actionBy = 'System|c88ef0dc-14ea-4556-922b-7f62a6a3ec9e';
@@ -101,7 +101,7 @@ class Refund extends ActionRequest
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
         // third-party http client https://github.com/guzzle/guzzle
-        $response = $this->client->post('api/1.0/Refund/refund', [
+        $response = $this->client->post('api/2.0/Refund/refund', [
             'headers' => [
                 'Accept' => 'application/jose',
                 'CompanyApiKey' => SecurityData::$AccessToken,
@@ -111,8 +111,8 @@ class Refund extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-        $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

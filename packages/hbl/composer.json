@@ -15,7 +15,7 @@
         "php": "^8.1|^8.2|^8.3|^8.4",
         "ext-openssl": "*",
         "nesbot/carbon": "^3.10",
-        "web-token/jwt-framework": "^4.0"
+        "web-token/jwt-framework": "^3.4"
     },
     "autoload": {
         "psr-4": {

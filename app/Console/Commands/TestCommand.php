@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Anil\Hbl\TransactionStatus;
+use Illuminate\Console\Command;
+
+class TestCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'tst';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $this->transactionStatus();
+    }
+
+    public function transactionStatus()
+    {
+        $hbl = new TransactionStatus;
+        $response = $hbl->Execute('1635476979216');
+        dd($response);
+    }
+}

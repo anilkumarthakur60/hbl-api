@@ -19,6 +19,7 @@ use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128CBCHS256;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP;
+use Jose\Component\Encryption\Compression\CompressionMethodManager;
 use Jose\Component\Encryption\JWEBuilder;
 use Jose\Component\Encryption\JWEDecrypter;
 use Jose\Component\Encryption\JWELoader;
@@ -34,11 +35,10 @@ use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer as JWSCompactSerializer;
 use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Psr\Http\Message\RequestInterface;
-use Symfony\Component\Clock\Clock;
 
 abstract class ActionRequest
 {
-    private const PaymentEndpoint = 'https://core.demo-paco.2c2p.com';
+    // private const PaymentEndpoint = "https://core.demo-paco.2c2p.com/";
 
     protected Client $client;
 
@@ -65,9 +65,8 @@ abstract class ActionRequest
         }));
 
         $this->client = new Client([
-            'base_uri' => self::PaymentEndpoint,
+            'base_uri' => SecurityData::$EndPoint,
             'handler' => $handler,
-
         ]);
 
         $this->jwsCompactSerializer = new JWSCompactSerializer;
@@ -103,36 +102,49 @@ abstract class ActionRequest
                 ]
             ),
         );
-
-        // Create a clock instance for the checkers
-        $clock = Clock::get();
-
         $this->claimCheckerManager = new ClaimCheckerManager(
             checkers: [
-                new NotBeforeChecker($clock),
-                new ExpirationTimeChecker($clock),
+                new NotBeforeChecker,
+                new ExpirationTimeChecker,
                 new AudienceChecker(SecurityData::$AccessToken),
                 new IssuerChecker(['PacoIssuer']),
             ]
         );
 
         $this->jweCompactSerializer = new JWECompactSerializer;
-
-        // Create algorithm managers for JWE
-        $jweAlgorithmManager = new AlgorithmManager([
-            new RSAOAEP,
-            new A128CBCHS256,
-        ]);
-
-        $this->jweBuilder = new JWEBuilder($jweAlgorithmManager);
-
+        $this->jweBuilder = new JWEBuilder(
+            algorithmManager: new AlgorithmManager(
+                algorithms: [
+                    new RSAOAEP,
+                ],
+            ),
+            contentEncryptionAlgorithmManager: new AlgorithmManager(
+                algorithms: [
+                    new A128CBCHS256,
+                ]
+            ),
+            compressionManager: new CompressionMethodManager(
+                methods: []
+            )
+        );
         $this->jweLoader = new JWELoader(
             serializerManager: new JWESerializerManager(
                 serializers: [
                     new JWECompactSerializer,
                 ]
             ),
-            jweDecrypter: new JWEDecrypter($jweAlgorithmManager),
+            jweDecrypter: new JWEDecrypter(
+                algorithmManager: new AlgorithmManager(
+                    algorithms: [
+                        new RSAOAEP,
+                    ]
+                ),
+                contentEncryptionAlgorithmManager: new AlgorithmManager(
+                    algorithms: [
+                        new A128CBCHS256,
+                    ]
+                )
+            ),
             headerCheckerManager: new HeaderCheckerManager(
                 checkers: [
                     new AlgorithmChecker(
@@ -188,7 +200,7 @@ abstract class ActionRequest
             ->withPayload($this->jwsCompactSerializer->serialize($jws))
             ->withSharedProtectedHeader([
                 'alg' => SecurityData::$JWEAlgorithm,
-                'enc' => SecurityData::$JWEEncrptionAlgorithm,
+                'enc' => SecurityData::$JWEEncryptionAlgorithm,
                 'kid' => SecurityData::$EncryptionKeyId,
                 'typ' => SecurityData::$TokenType,
             ])
@@ -212,7 +224,9 @@ abstract class ActionRequest
         $jws = $this->jwsLoader->loadAndVerifyWithKey($jwe->getPayload(), $signatureVerificationKey, $signature);
 
         $token = $jws->getPayload();
+
         $claims = json_decode($token, true);
+
         $this->claimCheckerManager->check($claims);
 
         return $token;
@@ -223,18 +237,15 @@ abstract class ActionRequest
      */
     protected function Guid(): string
     {
-        if (function_exists('com_create_guid')) {
-            return com_create_guid();
-        } else {
-            $charId = strtoupper(md5(uniqid(rand(), true)));
-            $hyphen = chr(45); // "-"
-            $guid = substr($charId, 0, 8).$hyphen
-                .substr($charId, 8, 4).$hyphen
-                .substr($charId, 12, 4).$hyphen
-                .substr($charId, 16, 4).$hyphen
-                .substr($charId, 20, 12);
 
-            return strtolower($guid);
-        }
+        $charId = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45); // "-"
+        $guid = substr($charId, 0, 8).$hyphen
+            .substr($charId, 8, 4).$hyphen
+            .substr($charId, 12, 4).$hyphen
+            .substr($charId, 16, 4).$hyphen
+            .substr($charId, 20, 12);
+
+        return strtolower($guid);
     }
 }
