@@ -6,14 +6,16 @@ use Illuminate\Support\Carbon;
 
 class Payment extends ActionRequest
 {
-    public function executeFormJose(array $paymentObj = []): string
+    public function executeFormJose(float $amount, string $orderNo, string $orderDescription, string $purchaseItemType = 'ticket', array $additionalData = []): string
     {
+        $amount = round($amount, 2);
+        $strAmount = str_pad(($amount == null ? 0 : $amount) * 100, 12, '0', STR_PAD_LEFT);
         try {
             $now = Carbon::now();
 
             $custom_fields = [];
-            if (! empty($paymentObj['custom_fields'])) {
-                foreach ($paymentObj['custom_fields'] as $key => $value) {
+            if (! empty($additionalData['custom_fields'])) {
+                foreach ($additionalData['custom_fields'] as $key => $value) {
                     $custom_fields[] = [
                         'fieldName' => $key,
                         'fieldValue' => $value,
@@ -25,35 +27,35 @@ class Payment extends ActionRequest
                 'apiRequest' => [
                     'requestMessageID' => $this->Guid(),
                     'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                    'language' => 'en-US',
+                    'language' => config('hbl.language'),
                 ],
                 'officeId' => SecurityData::$MerchantId,
-                'orderNo' => $paymentObj['order_no'],
-                'productDescription' => 'Booking Payment',
-                'paymentType' => 'CC',
-                'paymentCategory' => 'ECOM',
+                'orderNo' => $orderNo,
+                'productDescription' => $orderDescription,
+                'paymentType' => config('hbl.payment_type'),
+                'paymentCategory' => config('hbl.payment_category'),
                 'storeCardDetails' => [
-                    'storeCardFlag' => 'N',
+                    'storeCardFlag' => config('hbl.store_card_flag'),
                     'storedCardUniqueID' => $this->Guid(),
                 ],
                 'installmentPaymentDetails' => [
-                    'ippFlag' => 'N',
-                    'installmentPeriod' => 0,
+                    'ippFlag' => config('hbl.ipp_flag'),
+                    'installmentPeriod' => config('hbl.installment_period'),
                     'interestType' => null,
                 ],
-                'mcpFlag' => 'N',
-                'request3dsFlag' => 'N',
+                'mcpFlag' => config('hbl.mcp_flag'),
+                'request3dsFlag' => config('hbl.request_3ds_flag'),
                 'transactionAmount' => [
-                    'amountText' => str_pad(($paymentObj['amount'] == null ? 0 : $paymentObj['amount']) * 100, 12, '0', STR_PAD_LEFT),
-                    'currencyCode' => 'USD',
+                    'amountText' => $strAmount,
+                    'currencyCode' => config('hbl.currency_code'),
                     'decimalPlaces' => 2,
-                    'amount' => $paymentObj['amount'],
+                    'amount' => $amount,
                 ],
                 'notificationURLs' => [
-                    'confirmationURL' => $paymentObj['success_url'],
-                    'failedURL' => $paymentObj['failed_url'],
-                    'cancellationURL' => $paymentObj['cancel_url'],
-                    'backendURL' => $paymentObj['backend_url'],
+                    'confirmationURL' => config('hbl.redirect_urls.confirmation'),
+                    'failedURL' => config('hbl.redirect_urls.failed'),
+                    'cancellationURL' => config('hbl.redirect_urls.cancel'),
+                    'backendURL' => config('hbl.redirect_urls.backend'),
                 ],
                 'deviceDetails' => [
                     'browserIp' => '1.0.0.1',
@@ -63,14 +65,14 @@ class Payment extends ActionRequest
                 ],
                 'purchaseItems' => [
                     [
-                        'purchaseItemType' => 'ticket',
-                        'referenceNo' => $paymentObj['order_no'],
+                        'purchaseItemType' => $purchaseItemType,
+                        'referenceNo' => $orderNo,
                         'purchaseItemDescription' => 'Bundled insurance',
                         'purchaseItemPrice' => [
-                            'amountText' => $paymentObj['amount'],
+                            'amountText' => $strAmount,
                             'currencyCode' => 'USD',
                             'decimalPlaces' => 2,
-                            'amount' => $paymentObj['amount'],
+                            'amount' => $amount,
                         ],
                         'subMerchantID' => 'string',
                         'passengerSeqNo' => 1,
@@ -82,7 +84,7 @@ class Payment extends ActionRequest
             $payload = [
                 'request' => $request,
                 'iss' => SecurityData::$AccessToken,
-                'aud' => 'PacoAudience',
+                'aud' => config('hbl.aud'),
                 'CompanyApiKey' => SecurityData::$AccessToken,
                 'iat' => $now->unix(),
                 'nbf' => $now->unix(),

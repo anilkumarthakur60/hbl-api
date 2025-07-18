@@ -71,6 +71,7 @@
         </div>
     </div>
 
+
     <form id="payment_form" action="{{ route('payment.store') }}" method="get">
         @csrf
 
@@ -120,6 +121,7 @@
                                 <th scope="col">ID</th>
                                 <th scope="col">Response</th>
                                 <th scope="col">Status</th>
+                                <th scope="col">Created At</th>
                                 <th scope="col">Action</th>
                                 <th scope="col">Delete</th>
                             </tr>
@@ -132,6 +134,7 @@
                                     <pre class="mb-0">{{ json_encode($response->response, JSON_PRETTY_PRINT) }}</pre>
                                 </td>
                                 <td>{{ $response->status }}</td>
+                                <td>{{ $response->created_at->diffForHumans() }}</td>
                                 <td>
                                     <a href="{{ route('payment.status', $response->order_no) }}" target="_blank" class="btn {{ $response->status == 'success' ? 'btn-success' : 'btn-danger' }}">
                                         See Details

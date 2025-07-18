@@ -23,18 +23,14 @@ class PaymentController extends Controller
     {
         $payment = new Payment;
         $response = $payment->executeFormJose(
-            [
-                'order_no' => Str::random(15),
-                'amount' => 1,
-                'success_url' => route('payment.success'),
-                'failed_url' => route('payment.failed'),
-                'cancel_url' => route('payment.cancel'),
-                'backend_url' => route('payment.backend'),
-                'custom_fields' => [
-                    'fullName' => 'Anil Kumar Thakur',
-                    'email' => 'anilkumarthakur60@gmail.com',
-                ],
-            ]
+            amount: 1,
+            orderNo: Str::random(15),
+            orderDescription: 'Booking Payment',
+            purchaseItemType: 'ticket',
+            additionalData: [
+                'fullName' => 'Anil Kumar Thakur',
+                'email' => 'anilkumarthakur60@gmail.com',
+            ],
         );
 
         $response = json_decode($response);

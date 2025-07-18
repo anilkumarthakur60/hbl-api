@@ -10,8 +10,8 @@ beforeEach(
      */
     function () {
         $this->merchantId = SecurityData::$MerchantId;
-        $this->apiKey = config('hbl.AccessToken');
-        $this->baseUrl = config('hbl.EndPoint');
+        $this->apiKey = config('hbl.access_token');
+        $this->baseUrl = config('hbl.end_point');
         if (! $this->merchantId || ! $this->apiKey || ! $this->baseUrl) {
             throw new Exception('HBL integration credentials or URL not configured in .env');
         }
@@ -21,25 +21,22 @@ beforeEach(
         $this->failedUrl = "{$appUrl}/failed";
         $this->cancelUrl = "{$appUrl}/cancel";
         $this->backendUrl = "{$appUrl}/backend";
-    });
+    }
+);
 
 it('actually hits the HBL sandbox and returns a well-formed response', function () {
     $json = $this->payment->executeFormJose(
-        [
-            'order_no' => Str::random(15),
-            'amount' => 1,
-            'success_url' => config('app.url').'/success',
-            'failed_url' => config('app.url').'/failed',
-            'cancel_url' => config('app.url').'/cancel',
-            'backend_url' => config('app.url').'/backend',
-            'custom_fields' => [
-                'fullname' => 'Anil Kumar Thakur',
-                'email' => 'anilkumarthakur60@gmail.com',
-            ],
-        ]
+        amount: 1,
+        orderNo: Str::random(15),
+        orderDescription: 'Booking Payment',
+        purchaseItemType: 'ticket',
+        additionalData: [
+            'fullName' => 'Anil Kumar Thakur',
+            'email' => 'anilkumarthakur60@gmail.com',
+        ],
     );
 
-    dd($json);
+    // dd($json);
     $object = json_decode($json);
 
     // root / data sanity
