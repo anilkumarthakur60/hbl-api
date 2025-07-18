@@ -67,10 +67,10 @@ class Payment extends ActionRequest
                     [
                         'purchaseItemType' => $purchaseItemType,
                         'referenceNo' => $orderNo,
-                        'purchaseItemDescription' => 'Bundled insurance',
+                        'purchaseItemDescription' => $orderDescription,
                         'purchaseItemPrice' => [
                             'amountText' => $strAmount,
-                            'currencyCode' => 'USD',
+                            'currencyCode' => config('hbl.currency_code'),
                             'decimalPlaces' => 2,
                             'amount' => $amount,
                         ],
