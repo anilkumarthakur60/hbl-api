@@ -146,10 +146,10 @@ class PaymentController extends Controller
         dd($response);
     }
 
-    public function inquiry($orderNo)
+    public function inquiry()
     {
         $hbl = new Inquiry;
-        $response = $hbl->executeJose();
+        $response = $hbl->executeJose('p0xCk9eoxizYCDR');
         $response = json_decode($response);
         dd($response);
     }
