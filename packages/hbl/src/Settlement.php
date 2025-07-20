@@ -43,8 +43,9 @@ class Settlement extends ActionRequest
         ];
 
         $stringPayload = json_encode($payload);
-        $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-        $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+
+        $signingKey = $this->GetPrivateKey(config('hbl.merchant_signing_private_key'));
+        $encryptingKey = $this->GetPublicKey(config('hbl.paco_encryption_public_key'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 

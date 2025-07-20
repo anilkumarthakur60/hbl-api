@@ -33,4 +33,5 @@ return [
     'merchant_decryption_private_key' => env('HBL_MERCHANT_DECRYPTION_PRIVATE_KEY', ''),
     'paco_encryption_public_key' => env('HBL_PACO_ENCRYPTION_PUBLIC_KEY', ''),
     'paco_signing_public_key' => env('HBL_PACO_SIGNING_PUBLIC_KEY', ''),
+    'decimal_places' => env('HBL_DECIMAL_PLACES', 2),
 ];

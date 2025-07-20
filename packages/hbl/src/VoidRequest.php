@@ -11,40 +11,37 @@ class VoidRequest extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteJose(): string
+    public function executeJose(string $orderNo, string $productDescription, string $issuerApprovalCode, string $amountText, float $amount): string
     {
         $now = Carbon::now();
-        $officeId = 9104137120;
-        $orderNo = '1643362945102'; // OrderNo can be Refund/Void one time only
-        $productDescription = 'Sample request for 1643362945102';
 
         $request = [
-            'officeId' => $officeId,
+            'officeId' => config('hbl.merchant_id'),
             'orderNo' => $orderNo,
             'productDescription' => $productDescription,
-            'issuerApprovalCode' => '140331', // approvalCode of order place (Payment api) response
+            'issuerApprovalCode' => $issuerApprovalCode,
             'actionBy' => 'System',
             'voidAmount' => [
-                'amountText' => '000000100000',
-                'currencyCode' => 'THB',
-                'decimalPlaces' => 2,
-                'amount' => 1000.00,
+                'amountText' => $amountText,
+                'currencyCode' => config('hbl.currency_code'),
+                'decimalPlaces' => config('hbl.decimal_places'),
+                'amount' => $amount,
             ],
         ];
 
         $payload = [
             'request' => $request,
-            'iss' => SecurityData::$AccessToken,
-            'aud' => 'PacoAudience',
-            'CompanyApiKey' => SecurityData::$AccessToken,
+            'iss' => config('hbl.access_token'),
+            'aud' => config('hbl.aud'),
+            'CompanyApiKey' => config('hbl.access_token'),
             'iat' => $now->unix(),
             'nbf' => $now->unix(),
             'exp' => $now->addHour()->unix(),
         ];
 
         $stringPayload = json_encode($payload);
-        $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-        $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+        $signingKey = $this->GetPrivateKey(config('hbl.merchant_signing_private_key'));
+        $encryptingKey = $this->GetPublicKey(config('hbl.paco_encryption_public_key'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
@@ -52,15 +49,15 @@ class VoidRequest extends ActionRequest
         $response = $this->client->post('api/2.0/Void', [
             'headers' => [
                 'Accept' => 'application/jose',
-                'CompanyApiKey' => SecurityData::$AccessToken,
+                'CompanyApiKey' => config('hbl.access_token'),
                 'Content-Type' => 'application/jose; charset=utf-8',
             ],
             'body' => $body,
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
-        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
+        $decryptingKey = $this->GetPrivateKey(config('hbl.merchant_decryption_private_key'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.paco_signing_public_key'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

@@ -55,8 +55,8 @@ class Inquiry extends ActionRequest
         ];
 
         $stringPayload = json_encode($payload);
-        $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-        $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+        $signingKey = $this->GetPrivateKey(config('hbl.merchant_signing_private_key'));
+        $encryptingKey = $this->GetPublicKey(config('hbl.paco_encryption_public_key'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
@@ -64,7 +64,7 @@ class Inquiry extends ActionRequest
         $response = $this->client->post('api/2.0/Inquiry/TransactionList', [
             'headers' => [
                 'Accept' => 'application/jose',
-                'CompanyApiKey' => SecurityData::$AccessToken,
+                'CompanyApiKey' => config('hbl.access_token'),
                 'Content-Type' => 'application/jose; charset=utf-8',
             ],
             'body' => $body,

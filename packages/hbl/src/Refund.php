@@ -49,8 +49,8 @@ class Refund extends ActionRequest
         ];
 
         $stringPayload = json_encode($payload);
-        $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-        $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+        $signingKey = $this->GetPrivateKey(config('hbl.merchant_signing_private_key'));
+        $encryptingKey = $this->GetPublicKey(config('hbl.paco_encryption_public_key'));
 
         $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
 
@@ -65,8 +65,8 @@ class Refund extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
-        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
+        $decryptingKey = $this->GetPrivateKey(config('hbl.merchant_decryption_private_key'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.paco_signing_public_key'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }
