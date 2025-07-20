@@ -162,7 +162,7 @@ abstract class ActionRequest
      */
     protected function GetPrivateKey(string $key, ?string $password = null, array $additional_values = []): JWK
     {
-        $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" . $key . "\n-----END RSA PRIVATE KEY-----";
+        $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n".$key."\n-----END RSA PRIVATE KEY-----";
 
         return JWKFactory::createFromKey($privateKey, $password, $additional_values);
     }
@@ -172,7 +172,7 @@ abstract class ActionRequest
      */
     protected function GetPublicKey(string $key, ?string $password = null, array $additional_values = []): JWK
     {
-        $publicKey = "-----BEGIN PUBLIC KEY-----\n" . $key . "\n-----END PUBLIC KEY-----";
+        $publicKey = "-----BEGIN PUBLIC KEY-----\n".$key."\n-----END PUBLIC KEY-----";
 
         return JWKFactory::createFromKey($publicKey, $password, $additional_values);
     }
@@ -236,11 +236,11 @@ abstract class ActionRequest
 
         $charId = strtoupper(md5(uniqid(rand(), true)));
         $hyphen = chr(45); // "-"
-        $guid = substr($charId, 0, 8) . $hyphen
-            . substr($charId, 8, 4) . $hyphen
-            . substr($charId, 12, 4) . $hyphen
-            . substr($charId, 16, 4) . $hyphen
-            . substr($charId, 20, 12);
+        $guid = substr($charId, 0, 8).$hyphen
+            .substr($charId, 8, 4).$hyphen
+            .substr($charId, 12, 4).$hyphen
+            .substr($charId, 16, 4).$hyphen
+            .substr($charId, 20, 12);
 
         return strtolower($guid);
     }

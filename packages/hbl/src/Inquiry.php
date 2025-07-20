@@ -16,7 +16,6 @@ class Inquiry extends ActionRequest
         $now = Carbon::now();
 
         $officeId = 9104137120;
-        $orderNo = 'p0xCk9eoxizYCDR';
 
         $request = [
             'apiRequest' => [
@@ -25,21 +24,25 @@ class Inquiry extends ActionRequest
                 'language' => 'en-US',
             ],
             'advSearchParams' => [
-                'controllerInternalID' => null,
+                'controllerInternalID' => $controllerInternalID,
                 'officeId' => [
                     $officeId,
                 ],
                 'orderNo' => [
                     $orderNo,
                 ],
-                'invoiceNo2C2P' => null,
-                'fromDate' => '0001-01-01T00:00:00',
-                'toDate' => '0001-01-01T00:00:00',
-                'amountFrom' => null,
-                'amountTo' => null,
+                'invoiceNo2C2P' => $invoiceNo2C2P,
+                'amountFrom' => $amountFrom,
+                'amountTo' => $amountTo,
             ],
         ];
 
+        if ($fromDate) {
+            $request['advSearchParams']['fromDate'] = $fromDate;
+        }
+        if ($toDate) {
+            $request['advSearchParams']['toDate'] = $toDate;
+        }
 
         $payload = [
             'request' => $request,

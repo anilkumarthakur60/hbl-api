@@ -29,7 +29,6 @@ return [
     'access_token' => env('HBL_ACCESS_TOKEN', '65805a1636c74b8e8ac81a991da80be4'),
     'merchant_id' => env('HBL_MERCHANT_ID', 9104137120),
 
-
     'merchant_signing_private_key' => env('HBL_MERCHANT_SIGNING_PRIVATE_KEY', ''),
     'merchant_decryption_private_key' => env('HBL_MERCHANT_DECRYPTION_PRIVATE_KEY', ''),
     'paco_encryption_public_key' => env('HBL_PACO_ENCRYPTION_PUBLIC_KEY', ''),
