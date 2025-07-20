@@ -151,6 +151,7 @@ class PaymentController extends Controller
         $hbl = new Inquiry;
         $response = $hbl->executeJose('p0xCk9eoxizYCDR');
         $response = json_decode($response);
-        dd($response);
+
+        return response()->json($response);
     }
 }
