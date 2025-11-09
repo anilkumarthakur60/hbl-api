@@ -3,6 +3,7 @@
 namespace Anil\Hbl;
 
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Settlement extends ActionRequest
@@ -11,11 +12,10 @@ class Settlement extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteJose(): string
+    public function executeJose(string $orderNo): string
     {
         $now = Carbon::now();
         $officeId = 9104137120;
-        $orderNo = '1643362945100';
         $productDescription = 'Sample request for 1643362945100';
 
         $request = [
@@ -60,8 +60,8 @@ class Settlement extends ActionRequest
         ]);
 
         $token = $response->getBody()->getContents();
-        $decryptingKey = $this->GetPrivateKey(config('hbl.MerchantDecryptionPrivateKey'));
-        $signatureVerificationKey = $this->GetPublicKey(config('hbl.PacoSigningPublicKey'));
+        $decryptingKey = $this->GetPrivateKey(config('hbl.merchant_decryption_private_key'));
+        $signatureVerificationKey = $this->GetPublicKey(config('hbl.paco_signing_public_key'));
 
         return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
     }

@@ -3,6 +3,7 @@
 namespace Anil\Hbl;
 
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
 class VoidRequest extends ActionRequest

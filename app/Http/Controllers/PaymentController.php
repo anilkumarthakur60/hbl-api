@@ -40,57 +40,50 @@ class PaymentController extends Controller
 
     public function success(Request $request)
     {
-        $response = HblResponse::firstOrCreate([
+        HblResponse::firstOrCreate([
             'order_no' => $request->orderNo,
         ], [
             'response' => $request->all(),
             'status' => 'success',
         ]);
-        $responses = HblResponse::query()->latest()->get();
 
-        return view('payment.index', compact('responses'));
+        return to_route('payment.index')->with('success', 'Payment successful');
     }
 
     public function failed(Request $request)
     {
-        $response = HblResponse::firstOrCreate([
+        HblResponse::firstOrCreate([
             'order_no' => $request->orderNo,
         ], [
             'response' => $request->all(),
             'status' => 'failed',
         ]);
 
-        $responses = HblResponse::query()->latest()->get();
-
-        return view('payment.index', compact('responses'));
+        return to_route('payment.index')->with('success', 'Payment failed');
     }
 
     public function cancel(Request $request)
     {
-        $response = HblResponse::firstOrCreate([
+        HblResponse::firstOrCreate([
             'order_no' => $request->orderNo,
         ], [
             'response' => $request->all(),
             'status' => 'cancel',
         ]);
 
-        $responses = HblResponse::query()->latest()->get();
-
-        return view('payment.index', compact('responses'));
+        return to_route('payment.index')->with('success', 'Payment cancelled');
     }
 
     public function backend(Request $request)
     {
-        $response = HblResponse::firstOrCreate([
+        HblResponse::firstOrCreate([
             'order_no' => $request->orderNo,
         ], [
             'response' => $request->all(),
             'status' => 'backend',
         ]);
 
-        $responses = HblResponse::query()->latest()->get();
-
-        return view('payment.index', compact('responses'));
+        return to_route('payment.index')->with('success', 'Backend response received');
     }
 
     public function index()
@@ -130,7 +123,7 @@ class PaymentController extends Controller
         return response()->json($response);
     }
 
-    public function void($orderNo)
+    public function void($orderNo = 'eviScSvEbf8Ywlh')
     {
         $hbl = new VoidRequest;
         $response = $hbl->executeJose(
@@ -144,18 +137,18 @@ class PaymentController extends Controller
         dd($response);
     }
 
-    public function settlement($orderNo)
+    public function settlement($orderNo = 'eviScSvEbf8Ywlh')
     {
         $hbl = new Settlement;
-        $response = $hbl->executeJose();
+        $response = $hbl->executeJose(orderNo: $orderNo);
         $response = json_decode($response);
         dd($response);
     }
 
-    public function inquiry()
+    public function inquiry($orderNo = 'eviScSvEbf8Ywlh')
     {
         $hbl = new Inquiry;
-        $response = $hbl->executeJose('p0xCk9eoxizYCDR');
+        $response = $hbl->executeJose(orderNo: $orderNo);
         $response = json_decode($response);
 
         return response()->json($response);

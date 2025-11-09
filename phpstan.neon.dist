@@ -7,4 +7,6 @@ parameters:
     paths:
         - app/
         - packages/
+    excludePaths:
+        - packages/hbl/vendor/*
     level: 5

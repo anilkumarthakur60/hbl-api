@@ -2,6 +2,7 @@
 
 namespace Anil\Hbl;
 
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Carbon;
 

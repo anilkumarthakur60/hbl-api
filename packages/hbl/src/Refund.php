@@ -3,6 +3,7 @@
 namespace Anil\Hbl;
 
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Refund extends ActionRequest
@@ -11,7 +12,7 @@ class Refund extends ActionRequest
      * @throws GuzzleException
      * @throws Exception
      */
-    public function ExecuteJose(): string
+    public function executeJose(): string
     {
         $now = Carbon::now();
         $officeId = 9104137120;
