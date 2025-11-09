@@ -11,6 +11,7 @@ use Jose\Component\Checker\AudienceChecker;
 use Jose\Component\Checker\ClaimCheckerManager;
 use Jose\Component\Checker\ExpirationTimeChecker;
 use Jose\Component\Checker\HeaderCheckerManager;
+use Jose\Component\Checker\InternalClock;
 use Jose\Component\Checker\IssuerChecker;
 use Jose\Component\Checker\NotBeforeChecker;
 use Jose\Component\Core\AlgorithmManager;
@@ -114,7 +115,7 @@ abstract class ActionRequest
     {
         return new JWSLoader(
             serializerManager: new JWSSerializerManager(
-                serializers: [new JWSCompactSerializer]
+                serializers: [$this->jwsCompactSerializer]
             ),
             jwsVerifier: new JWSVerifier(
                 signatureAlgorithmManager: new AlgorithmManager(
@@ -138,10 +139,20 @@ abstract class ActionRequest
      */
     private function createClaimCheckerManager(): ClaimCheckerManager
     {
+        $clock = new InternalClock;
+
         return new ClaimCheckerManager(
             checkers: [
-                new NotBeforeChecker(self::TIME_DRIFT_ALLOWED),
-                new ExpirationTimeChecker(self::TIME_DRIFT_ALLOWED),
+                new NotBeforeChecker(
+                    allowedTimeDrift: self::TIME_DRIFT_ALLOWED,
+                    protectedHeaderOnly: false,
+                    clock: $clock
+                ),
+                new ExpirationTimeChecker(
+                    allowedTimeDrift: self::TIME_DRIFT_ALLOWED,
+                    protectedHeaderOnly: false,
+                    clock: $clock
+                ),
                 new AudienceChecker(SecurityData::$AccessToken),
                 new IssuerChecker([self::ISSUER]),
             ]
@@ -172,7 +183,7 @@ abstract class ActionRequest
     {
         return new JWELoader(
             serializerManager: new JWESerializerManager(
-                serializers: [new JWECompactSerializer]
+                serializers: [$this->jweCompactSerializer]
             ),
             jweDecrypter: new JWEDecrypter(
                 new AlgorithmManager(

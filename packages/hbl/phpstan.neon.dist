@@ -3,9 +3,9 @@ includes:
     - vendor/nesbot/carbon/extension.neon
 
 parameters:
-
     paths:
         - src/
         - config/
     level: 5
+    ig
 
