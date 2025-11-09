@@ -6,7 +6,7 @@ class SecurityData
 {
     public static int $MerchantId = 9104137120;
 
-    public static string $EndPoint = 'https://core.demo-paco.2c2p.com';
+    public static string $EndPoint = 'https://core.paco.2c2p.com';
 
     /**
      * JWE Key Id.

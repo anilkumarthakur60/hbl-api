@@ -9,53 +9,47 @@ class Payment extends ActionRequest
     public function executeFormJose(float $amount, string $orderNo, string $orderDescription, string $purchaseItemType = 'ticket', array $additionalData = []): string
     {
         $amount = round($amount, 2);
-        $strAmount = str_pad(($amount == null ? 0 : $amount) * 100, 12, '0', STR_PAD_LEFT);
         try {
             $now = Carbon::now();
-
-            $custom_fields = [];
-            if (! empty($additionalData['custom_fields'])) {
-                foreach ($additionalData['custom_fields'] as $key => $value) {
-                    $custom_fields[] = [
-                        'fieldName' => $key,
-                        'fieldValue' => $value,
-                    ];
-                }
-            }
-
             $request = [
                 'apiRequest' => [
                     'requestMessageID' => $this->Guid(),
                     'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
-                    'language' => config('hbl.language'),
+                    'language' => 'en-US',
                 ],
                 'officeId' => SecurityData::$MerchantId,
                 'orderNo' => $orderNo,
                 'productDescription' => $orderDescription,
-                'paymentType' => config('hbl.payment_type'),
-                'paymentCategory' => config('hbl.payment_category'),
+                'paymentType' => 'CC',
+                'paymentCategory' => 'ECOM',
+                'creditCardDetails' => [
+                    'cardNumber' => '4706860000002325',
+                    'cardExpiryMMYY' => '1225',
+                    'cvvCode' => '761',
+                    'payerName' => 'Demo Sample',
+                ],
                 'storeCardDetails' => [
-                    'storeCardFlag' => config('hbl.store_card_flag'),
+                    'storeCardFlag' => 'N',
                     'storedCardUniqueID' => $this->Guid(),
                 ],
                 'installmentPaymentDetails' => [
-                    'ippFlag' => config('hbl.ipp_flag'),
-                    'installmentPeriod' => config('hbl.installment_period'),
+                    'ippFlag' => 'N',
+                    'installmentPeriod' => 0,
                     'interestType' => null,
                 ],
-                'mcpFlag' => config('hbl.mcp_flag'),
-                'request3dsFlag' => config('hbl.request_3ds_flag'),
+                'mcpFlag' => 'N',
+                'request3dsFlag' => 'N',
                 'transactionAmount' => [
-                    'amountText' => $strAmount,
-                    'currencyCode' => config('hbl.currency_code'),
+                    'amountText' => '000000100000',
+                    'currencyCode' => 'THB',
                     'decimalPlaces' => 2,
-                    'amount' => $amount,
+                    'amount' => 1000,
                 ],
                 'notificationURLs' => [
-                    'confirmationURL' => config('hbl.redirect_urls.confirmation'),
-                    'failedURL' => config('hbl.redirect_urls.failed'),
-                    'cancellationURL' => config('hbl.redirect_urls.cancel'),
-                    'backendURL' => config('hbl.redirect_urls.backend'),
+                    'confirmationURL' => 'http://example-confirmation.com',
+                    'failedURL' => 'http://example-failed.com',
+                    'cancellationURL' => 'http://example-cancellation.com',
+                    'backendURL' => 'http://example-backend.com',
                 ],
                 'deviceDetails' => [
                     'browserIp' => '1.0.0.1',
@@ -65,26 +59,31 @@ class Payment extends ActionRequest
                 ],
                 'purchaseItems' => [
                     [
-                        'purchaseItemType' => $purchaseItemType,
-                        'referenceNo' => $orderNo,
-                        'purchaseItemDescription' => $orderDescription,
+                        'purchaseItemType' => 'ticket',
+                        'referenceNo' => '2322460376026',
+                        'purchaseItemDescription' => 'Bundled insurance',
                         'purchaseItemPrice' => [
-                            'amountText' => $strAmount,
-                            'currencyCode' => config('hbl.currency_code'),
+                            'amountText' => '000000100000',
+                            'currencyCode' => 'THB',
                             'decimalPlaces' => 2,
-                            'amount' => $amount,
+                            'amount' => 1000,
                         ],
                         'subMerchantID' => 'string',
                         'passengerSeqNo' => 1,
                     ],
                 ],
-                'customFieldList' => $custom_fields,
+                'customFieldList' => [
+                    [
+                        'fieldName' => 'TestField',
+                        'fieldValue' => 'This is test',
+                    ],
+                ],
             ];
 
             $payload = [
                 'request' => $request,
                 'iss' => SecurityData::$AccessToken,
-                'aud' => config('hbl.aud'),
+                'aud' => 'PacoAudience',
                 'CompanyApiKey' => SecurityData::$AccessToken,
                 'iat' => $now->unix(),
                 'nbf' => $now->unix(),
@@ -92,24 +91,23 @@ class Payment extends ActionRequest
             ];
 
             $stringPayload = json_encode($payload);
-            $signingKey = $this->GetPrivateKey(config('hbl.merchant_signing_private_key'));
-            $encryptingKey = $this->GetPublicKey(config('hbl.paco_encryption_public_key'));
+            $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
+            $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
 
             $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
-
             // third-party http client https://github.com/guzzle/guzzle
             $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
                 'headers' => [
                     'Accept' => 'application/jose',
-                    'CompanyApiKey' => config('hbl.access_token'),
+                    'CompanyApiKey' => SecurityData::$AccessToken,
                     'Content-Type' => 'application/jose; charset=utf-8',
                 ],
                 'body' => $body,
             ]);
 
             $token = $response->getBody()->getContents();
-            $decryptingKey = $this->GetPrivateKey(config('hbl.merchant_decryption_private_key'));
-            $signatureVerificationKey = $this->GetPublicKey(config('hbl.paco_signing_public_key'));
+            $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
+            $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
 
             return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
         } catch (\Throwable $th) {
