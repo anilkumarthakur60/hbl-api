@@ -12,10 +12,10 @@ return [
     'request_3ds_flag' => env('HBL_REQUEST_3DS_FLAG', 'N'),
     'aud' => env('HBL_AUD', 'PacoAudience'),
     'redirect_urls' => [
-        'confirmation' => env('HBL_REDIRECT_URL_CONFIRMATION', 'http://hbl-api.test/success'),
-        'failed' => env('HBL_REDIRECT_URL_FAILED', 'http://hbl-api.test/failed'),
-        'cancel' => env('HBL_REDIRECT_URL_CANCEL', 'http://hbl-api.test/cancel'),
-        'backend' => env('HBL_REDIRECT_URL_BACKEND', 'http://hbl-api.test/backend'),
+        'confirmation' => config('app.url').'/success',
+        'failed' => config('app.url').'/failed',
+        'cancel' => config('app.url').'/cancel',
+        'backend' => config('app.url').'/backend',
     ],
 
     'device_details' => [

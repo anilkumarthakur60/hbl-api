@@ -59,9 +59,9 @@
     <div class="container">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Payment Credentials</h5>
+                <h5 class="card-title">First Credentials</h5>
                 <p class="card-text">
-                    <strong>Card Number:</strong> 5399 3300 0001 2640
+                    <strong>Card Number:</strong> 5399330000012640
                     <br>
                     <strong>Expiry Date:</strong> 04/27
                     <br>
@@ -69,86 +69,98 @@
                 </p>
             </div>
         </div>
-    </div>
-
-
-    <form id="payment_form" action="{{ route('payment.store') }}" method="get">
-        @csrf
-
-        <a href="{{ route('payment.store') }}" class="btn btn-primary">Payment</a>
-
-        <h4 class="mb-4 text-center">Payment Form</h4>
-
-        <div class="mb-3">
-            <label for="amount" class="form-label">Amount to Pay (NPR):</label>
-            <input type="number" value="1" required name="amount" class="form-control" id="amount" placeholder="e.g. 1">
-        </div>
-
-
-        <div class="mb-3">
-            <label for="fullname" class="form-label">Full Name:</label>
-            <input name="fullname" value="Test Name" required type="text" id="fullname" class="form-control" placeholder="Your full name">
-        </div>
-
-        <div class="mb-3">
-            <label for="email" class="form-label">Email Address:</label>
-            <input type="email" name="email" value="test@gmail.com" class="form-control" id="email" placeholder="you@example.com">
-        </div>
-
-        <div class="mb-3">
-            <label for="phone" class="form-label">Contact Number:</label>
-            <input type="tel" required name="contact_number" value="9843262634" class="form-control" id="phone" placeholder="e.g. 9800000000">
-        </div>
-
-
-        <div class="d-grid">
-            <button id="payment_submit_button" type="submit" class="btn btn-primary btn-lg">
-                Proceed to Payment
-            </button>
-        </div>
-    </form>
-    @if ($responses->count())
-    <div class="container mt-5">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Payment Responses</h5>
+        <!-- 0195072619   07/25   378 -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Second Credentials</h5>
+                <p class="card-text">
+                    <strong>Card Number:</strong> 4101490195072619
+                    <br>
+                    <strong>Expiry Date:</strong> 07/25
+                    <br>
+                    <strong>CVV:</strong> 378
+                </p>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Response</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Created At</th>
-                                <th scope="col">Action</th>
-                                <th scope="col">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($responses as $response)
-                            <tr>
-                                <td>{{ $response->id }}</td>
-                                <td>
-                                    <pre class="mb-0">{{ json_encode($response->response, JSON_PRETTY_PRINT) }}</pre>
-                                </td>
-                                <td>{{ $response->status }}</td>
-                                <td>{{ $response->created_at->diffForHumans() }}</td>
-                                <td>
-                                    <a href="{{ route('payment.status', $response->order_no) }}" target="_blank" class="btn {{ $response->status == 'success' ? 'btn-success' : 'btn-danger' }}">
-                                        See Details
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="{{ route('payment.delete', $response->order_no) }}" class="btn btn-secondary">Delete</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        </div>
+
+
+        <form id="payment_form" action="{{ route('payment.store') }}" method="get">
+            @csrf
+
+            <a href="{{ route('payment.store') }}" class="btn btn-primary">Payment</a>
+
+            <h4 class="mb-4 text-center">Payment Form</h4>
+
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount to Pay (NPR):</label>
+                <input type="number" value="1" required name="amount" class="form-control" id="amount" placeholder="e.g. 1">
+            </div>
+
+
+            <div class="mb-3">
+                <label for="fullname" class="form-label">Full Name:</label>
+                <input name="fullname" value="Test Name" required type="text" id="fullname" class="form-control" placeholder="Your full name">
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address:</label>
+                <input type="email" name="email" value="test@gmail.com" class="form-control" id="email" placeholder="you@example.com">
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Contact Number:</label>
+                <input type="tel" required name="contact_number" value="9843262634" class="form-control" id="phone" placeholder="e.g. 9800000000">
+            </div>
+
+
+            <div class="d-grid">
+                <button id="payment_submit_button" type="submit" class="btn btn-primary btn-lg">
+                    Proceed to Payment
+                </button>
+            </div>
+        </form>
+        @if ($responses->count())
+        <div class="container mt-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Payment Responses</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Response</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Created At</th>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($responses as $response)
+                                <tr>
+                                    <td>{{ $response->id }}</td>
+                                    <td>
+                                        <pre class="mb-0">{{ json_encode($response->response, JSON_PRETTY_PRINT) }}</pre>
+                                    </td>
+                                    <td>{{ $response->status }}</td>
+                                    <td>{{ $response->created_at->diffForHumans() }}</td>
+                                    <td>
+                                        <a href="{{ route('payment.status', $response->order_no) }}" target="_blank" class="btn {{ $response->status == 'success' ? 'btn-success' : 'btn-danger' }}">
+                                            See Details
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('payment.delete', $response->order_no) }}" class="btn btn-secondary">Delete</a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    @endif
+        @endif

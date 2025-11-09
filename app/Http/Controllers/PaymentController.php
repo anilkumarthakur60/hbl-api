@@ -133,7 +133,13 @@ class PaymentController extends Controller
     public function void($orderNo)
     {
         $hbl = new VoidRequest;
-        $response = $hbl->executeJose();
+        $response = $hbl->executeJose(
+            orderNo: $orderNo,
+            productDescription: 'Booking Payment',
+            issuerApprovalCode: '123456',
+            amountText: '1',
+            amount: 1,
+        );
         $response = json_decode($response);
         dd($response);
     }
