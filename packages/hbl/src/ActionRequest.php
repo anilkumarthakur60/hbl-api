@@ -17,7 +17,6 @@ use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128CBCHS256;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP;
-use Jose\Component\Encryption\Compression\CompressionMethodManager;
 use Jose\Component\Encryption\JWEBuilder;
 use Jose\Component\Encryption\JWEDecrypter;
 use Jose\Component\Encryption\JWELoader;
@@ -38,53 +37,88 @@ abstract class ActionRequest
 {
     protected Client $client;
 
-    private JWSCompactSerializer $jwsCompactSerializer;
+    private readonly JWSCompactSerializer $jwsCompactSerializer;
 
-    private JWSBuilder $jwsBuilder;
+    private readonly JWSBuilder $jwsBuilder;
 
-    private JWSLoader $jwsLoader;
+    private readonly JWSLoader $jwsLoader;
 
-    private ClaimCheckerManager $claimCheckerManager;
+    private readonly ClaimCheckerManager $claimCheckerManager;
 
-    private JWECompactSerializer $jweCompactSerializer;
+    private readonly JWECompactSerializer $jweCompactSerializer;
 
-    private JWEBuilder $jweBuilder;
+    private readonly JWEBuilder $jweBuilder;
 
-    private JWELoader $jweLoader;
+    private readonly JWELoader $jweLoader;
+
+    private const KEY_PREFIX_PRIVATE = "-----BEGIN RSA PRIVATE KEY-----\n";
+
+    private const KEY_SUFFIX_PRIVATE = "\n-----END RSA PRIVATE KEY-----";
+
+    private const KEY_PREFIX_PUBLIC = "-----BEGIN PUBLIC KEY-----\n";
+
+    private const KEY_SUFFIX_PUBLIC = "\n-----END PUBLIC KEY-----";
+
+    private const GUID_HYPHEN = '-';
+
+    private const GUID_LENGTHS = [8, 4, 4, 4, 12];
+
+    private const TIME_DRIFT_ALLOWED = 0;
+
+    private const ISSUER = 'PacoIssuer';
 
     public function __construct()
     {
-        $handler = HandlerStack::create();
+        $this->client = $this->createHttpClient();
+        $this->jwsCompactSerializer = new JWSCompactSerializer;
+        $this->jwsBuilder = $this->createJWSBuilder();
+        $this->jwsLoader = $this->createJWSLoader();
+        $this->claimCheckerManager = $this->createClaimCheckerManager();
+        $this->jweCompactSerializer = new JWECompactSerializer;
+        $this->jweBuilder = $this->createJWEBuilder();
+        $this->jweLoader = $this->createJWELoader();
+    }
 
+    /**
+     * Creates an HTTP client with custom handler stack.
+     */
+    private function createHttpClient(): Client
+    {
+        $handler = HandlerStack::create();
         $handler->push(Middleware::mapRequest(function (RequestInterface $request) {
             return $request->withoutHeader('User-Agent');
         }));
 
-        // https://core.demo-paco.2c2p.com
-        $this->client = new Client([
+        return new Client([
             'base_uri' => SecurityData::$EndPoint,
             'handler' => $handler,
         ]);
+    }
 
-        $this->jwsCompactSerializer = new JWSCompactSerializer;
-        $this->jwsBuilder = new JWSBuilder(
+    /**
+     * Creates a JWS (JSON Web Signature) builder.
+     */
+    private function createJWSBuilder(): JWSBuilder
+    {
+        return new JWSBuilder(
             signatureAlgorithmManager: new AlgorithmManager(
-                algorithms: [
-                    new PS256,
-                ]
+                algorithms: [new PS256]
             )
         );
-        $this->jwsLoader = new JWSLoader(
+    }
+
+    /**
+     * Creates a JWS loader with verifier and header checker.
+     */
+    private function createJWSLoader(): JWSLoader
+    {
+        return new JWSLoader(
             serializerManager: new JWSSerializerManager(
-                serializers: [
-                    new JWSCompactSerializer,
-                ]
+                serializers: [new JWSCompactSerializer]
             ),
             jwsVerifier: new JWSVerifier(
                 signatureAlgorithmManager: new AlgorithmManager(
-                    algorithms: [
-                        new PS256,
-                    ]
+                    algorithms: [new PS256]
                 )
             ),
             headerCheckerManager: new HeaderCheckerManager(
@@ -94,22 +128,32 @@ abstract class ActionRequest
                         protectedHeader: true
                     ),
                 ],
-                tokenTypes: [
-                    new JWSTokenSupport,
-                ]
+                tokenTypes: [new JWSTokenSupport]
             ),
         );
-        $this->claimCheckerManager = new ClaimCheckerManager(
+    }
+
+    /**
+     * Creates a claim checker manager with all required checkers.
+     */
+    private function createClaimCheckerManager(): ClaimCheckerManager
+    {
+        return new ClaimCheckerManager(
             checkers: [
-                new NotBeforeChecker(0),
-                new ExpirationTimeChecker(0),
+                new NotBeforeChecker(self::TIME_DRIFT_ALLOWED),
+                new ExpirationTimeChecker(self::TIME_DRIFT_ALLOWED),
                 new AudienceChecker(SecurityData::$AccessToken),
-                new IssuerChecker(['PacoIssuer']),
+                new IssuerChecker([self::ISSUER]),
             ]
         );
+    }
 
-        $this->jweCompactSerializer = new JWECompactSerializer;
-        $this->jweBuilder = new JWEBuilder(
+    /**
+     * Creates a JWE (JSON Web Encryption) builder.
+     */
+    private function createJWEBuilder(): JWEBuilder
+    {
+        return new JWEBuilder(
             new AlgorithmManager(
                 algorithms: [
                     new RSAOAEP,
@@ -117,15 +161,18 @@ abstract class ActionRequest
                 ],
             ),
             null,
-            new CompressionMethodManager(
-                methods: []
-            )
+            null
         );
-        $this->jweLoader = new JWELoader(
+    }
+
+    /**
+     * Creates a JWE loader with decrypter and header checker.
+     */
+    private function createJWELoader(): JWELoader
+    {
+        return new JWELoader(
             serializerManager: new JWESerializerManager(
-                serializers: [
-                    new JWECompactSerializer,
-                ]
+                serializers: [new JWECompactSerializer]
             ),
             jweDecrypter: new JWEDecrypter(
                 new AlgorithmManager(
@@ -144,39 +191,52 @@ abstract class ActionRequest
                         protectedHeader: true
                     ),
                 ],
-                tokenTypes: [
-                    new JWETokenSupport,
-                ]
+                tokenTypes: [new JWETokenSupport]
             )
         );
     }
 
     /**
-     * Creates a JWK Private Key from PKCS#8 Encoded Private Key
+     * Creates a JWK Private Key from PKCS#8 Encoded Private Key.
+     *
+     * @param  string  $key  The base64-encoded private key
+     * @param  string|null  $password  Optional password for encrypted keys
+     * @param  array<string, mixed>  $additionalValues  Additional key values
+     * @return JWK The created JWK private key
      */
-    protected function GetPrivateKey(string $key, ?string $password = null, array $additional_values = []): JWK
+    protected function GetPrivateKey(string $key, ?string $password = null, array $additionalValues = []): JWK
     {
-        $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n".$key."\n-----END RSA PRIVATE KEY-----";
+        $privateKey = self::KEY_PREFIX_PRIVATE.$key.self::KEY_SUFFIX_PRIVATE;
 
-        return JWKFactory::createFromKey($privateKey, $password, $additional_values);
+        return JWKFactory::createFromKey($privateKey, $password, $additionalValues);
     }
 
     /**
-     * Creates a JWK Public Key from PKCS#8 Encoded Public Key
+     * Creates a JWK Public Key from PKCS#8 Encoded Public Key.
+     *
+     * @param  string  $key  The base64-encoded public key
+     * @param  string|null  $password  Optional password for encrypted keys
+     * @param  array<string, mixed>  $additionalValues  Additional key values
+     * @return JWK The created JWK public key
      */
-    protected function GetPublicKey(string $key, ?string $password = null, array $additional_values = []): JWK
+    protected function GetPublicKey(string $key, ?string $password = null, array $additionalValues = []): JWK
     {
-        $publicKey = "-----BEGIN PUBLIC KEY-----\n".$key."\n-----END PUBLIC KEY-----";
+        $publicKey = self::KEY_PREFIX_PUBLIC.$key.self::KEY_SUFFIX_PUBLIC;
 
-        return JWKFactory::createFromKey($publicKey, $password, $additional_values);
+        return JWKFactory::createFromKey($publicKey, $password, $additionalValues);
     }
 
     /**
-     * Creates an encrypted JOSE Token from given payload
+     * Creates an encrypted JOSE Token from given payload.
+     *
+     * @param  string  $payload  The JSON payload to encrypt
+     * @param  JWK  $signingKey  The key for signing the JWS
+     * @param  JWK  $encryptingKey  The key for encrypting the JWE
+     * @return string The serialized encrypted token
      */
     protected function EncryptPayload(string $payload, JWK $signingKey, JWK $encryptingKey): string
     {
-        // used third-party php jwt framework : https://github.com/web-token/jwt-framework
+        // Create JWS (JSON Web Signature)
         $jws = $this->jwsBuilder
             ->create()
             ->withPayload($payload)
@@ -186,7 +246,7 @@ abstract class ActionRequest
             ])
             ->build();
 
-        // used third-party php jwt framework : https://github.com/web-token/jwt-framework
+        // Create JWE (JSON Web Encryption) wrapping the JWS
         $jwe = $this->jweBuilder
             ->create()
             ->withPayload($this->jwsCompactSerializer->serialize($jws))
@@ -203,39 +263,51 @@ abstract class ActionRequest
     }
 
     /**
-     * Decrypts a JOSE Token and returns plain text payload
+     * Decrypts a JOSE Token and returns plain text payload.
      *
-     * @throws Exception
+     * @param  string  $token  The encrypted token to decrypt
+     * @param  JWK  $decryptingKey  The key for decrypting the JWE
+     * @param  JWK  $signatureVerificationKey  The key for verifying the JWS signature
+     * @return string The decrypted payload
+     *
+     * @throws Exception If decryption or verification fails
      */
     protected function DecryptToken(string $token, JWK $decryptingKey, JWK $signatureVerificationKey): string
     {
+        $recipient = 0;
         $jwe = $this->jweLoader->loadAndDecryptWithKey($token, $decryptingKey, $recipient);
 
+        $signature = 0;
         $jws = $this->jwsLoader->loadAndVerifyWithKey($jwe->getPayload(), $signatureVerificationKey, $signature);
 
-        $token = $jws->getPayload();
+        $decryptedPayload = $jws->getPayload();
+        $claims = json_decode($decryptedPayload, true);
 
-        $claims = json_decode($token, true);
+        if (! is_array($claims)) {
+            throw new Exception('Invalid token payload: expected JSON object');
+        }
 
         $this->claimCheckerManager->check($claims);
 
-        return $token;
+        return $decryptedPayload;
     }
 
     /**
-     * Creates a GUID
+     * Generates a UUID v4 compatible GUID.
+     *
+     * @return string The generated GUID in lowercase
      */
     protected function Guid(): string
     {
+        $charId = strtoupper(md5(uniqid((string) rand(), true)));
+        $guidParts = [];
+        $offset = 0;
 
-        $charId = strtoupper(md5(uniqid(rand(), true)));
-        $hyphen = chr(45); // "-"
-        $guid = substr($charId, 0, 8).$hyphen
-            .substr($charId, 8, 4).$hyphen
-            .substr($charId, 12, 4).$hyphen
-            .substr($charId, 16, 4).$hyphen
-            .substr($charId, 20, 12);
+        foreach (self::GUID_LENGTHS as $length) {
+            $guidParts[] = substr($charId, $offset, $length);
+            $offset += $length;
+        }
 
-        return strtolower($guid);
+        return strtolower(implode(self::GUID_HYPHEN, $guidParts));
     }
 }
