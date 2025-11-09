@@ -4,26 +4,18 @@ namespace Anil\Hbl;
 
 class SecurityData
 {
-    public static string $MerchantId = "000009100139864";
+    public static string $MerchantId = '9104137120';
 
-    public static string $EndPoint = 'https://core.paco.2c2p.com';
+    public static string $EndPoint = 'https://core.demo-paco.2c2p.com';
 
     /**
      * JWE Key Id.
      */
-    public static string $EncryptionKeyId = '639bfa9e295c45a49e1682f72f7e987f';
+    public static string $EncryptionKeyId = '7664a2ed0dee4879bdfca0e8ce1ac313';
 
     /**
      * Access Token.
-     *
-     * USD
-     * 87075a8448b811edaf360279bcee2f04
-     * NPR
-     * 94e92b1059b211edaf360279bcee2f04
-     *
-     * 65805a1636c74b8e8ac81a991da80be4
-     *
-     * hdghgdad372c5426d855017aa857c469d
+     * 65805a1636c74b8e8ac81a991da80be4 working for dev
      */
     public static string $AccessToken = '65805a1636c74b8e8ac81a991da80be4'; // NPR/USD API KEY///////////
 
