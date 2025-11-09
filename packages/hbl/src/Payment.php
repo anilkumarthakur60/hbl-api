@@ -19,7 +19,7 @@ class Payment extends ActionRequest
                 ],
                 'officeId' => SecurityData::$MerchantId,
                 'orderNo' => $orderNo,
-                'productDescription' => "Booking Payment",
+                'productDescription' => "Booking Payment Test for $orderNo",
                 'paymentType' => 'CC',
                 'paymentCategory' => 'ECOM',
                 'creditCardDetails' => [

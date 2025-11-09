@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Anil\Hbl\Payment;
-use Anil\Hbl\TransactionStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
