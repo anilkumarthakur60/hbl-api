@@ -4,14 +4,14 @@ namespace Anil\Hbl;
 
 class SecurityData
 {
-    public static int $MerchantId = 9104137120;
+    public static string $MerchantId = "000009100139864";
 
     public static string $EndPoint = 'https://core.paco.2c2p.com';
 
     /**
      * JWE Key Id.
      */
-    public static string $EncryptionKeyId = '7664a2ed0dee4879bdfca0e8ce1ac313';
+    public static string $EncryptionKeyId = '639bfa9e295c45a49e1682f72f7e987f';
 
     /**
      * Access Token.
