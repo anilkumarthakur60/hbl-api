@@ -26,7 +26,7 @@ class Settlement extends ActionRequest
             'actionBy' => 'System',
             'settlementAmount' => [
                 'amountText' => '000000100000',
-                'currencyCode' => 'THB',
+                'currencyCode' => 'NPR',
                 'decimalPlaces' => 2,
                 'amount' => 1000.00,
             ],

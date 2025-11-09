@@ -41,7 +41,7 @@ class Payment extends ActionRequest
                 'request3dsFlag' => 'N',
                 'transactionAmount' => [
                     'amountText' => '000000100000',
-                    'currencyCode' => 'THB',
+                    'currencyCode' => 'NPR',
                     'decimalPlaces' => 2,
                     'amount' => 1000,
                 ],
@@ -64,7 +64,7 @@ class Payment extends ActionRequest
                         'purchaseItemDescription' => 'Bundled insurance',
                         'purchaseItemPrice' => [
                             'amountText' => '000000100000',
-                            'currencyCode' => 'THB',
+                            'currencyCode' => 'NPR',
                             'decimalPlaces' => 2,
                             'amount' => 1000,
                         ],

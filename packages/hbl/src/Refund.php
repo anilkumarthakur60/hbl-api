@@ -24,7 +24,7 @@ class Refund extends ActionRequest
         $request = [
             'refundAmount' => [
                 'AmountText' => '000000100000',
-                'CurrencyCode' => 'THB',
+                'CurrencyCode' => 'NPR',
                 'DecimalPlaces' => 2,
                 'Amount' => 1000.00,
             ],
