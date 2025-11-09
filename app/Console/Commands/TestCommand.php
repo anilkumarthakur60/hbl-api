@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use Anil\Hbl\Payment;
 use Anil\Hbl\TransactionStatus;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class TestCommand extends Command
 {
@@ -12,7 +14,7 @@ class TestCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'tst';
+    protected $signature = 'ts';
 
     /**
      * The console command description.
@@ -31,8 +33,13 @@ class TestCommand extends Command
 
     public function transactionStatus()
     {
-        $hbl = new TransactionStatus;
-        $response = $hbl->Execute('1635476979216');
-        dd($response);
+        $payment = new Payment;
+        $response = $payment->executeFormJose(
+            amount: 1,
+            orderNo: Str::random(15),
+        );
+
+        $response = json_decode($response);
+        dd($response->response->data->paymentPage->paymentPageURL);
     }
 }

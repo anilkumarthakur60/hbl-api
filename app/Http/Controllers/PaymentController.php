@@ -25,12 +25,6 @@ class PaymentController extends Controller
         $response = $payment->executeFormJose(
             amount: 1,
             orderNo: Str::random(15),
-            orderDescription: 'Booking Payment',
-            purchaseItemType: 'ticket',
-            additionalData: [
-                'fullName' => 'Anil Kumar Thakur',
-                'email' => 'anilkumarthakur60@gmail.com',
-            ],
         );
 
         $response = json_decode($response);

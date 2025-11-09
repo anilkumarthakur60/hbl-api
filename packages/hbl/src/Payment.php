@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 
 class Payment extends ActionRequest
 {
-    public function executeFormJose(float $amount, string $orderNo, string $orderDescription, string $purchaseItemType = 'ticket', array $additionalData = []): string
+    public function executeFormJose(float $amount, string $orderNo): string
     {
         $amount = round($amount, 2);
         try {
@@ -19,7 +19,7 @@ class Payment extends ActionRequest
                 ],
                 'officeId' => SecurityData::$MerchantId,
                 'orderNo' => $orderNo,
-                'productDescription' => $orderDescription,
+                'productDescription' => "Booking Payment",
                 'paymentType' => 'CC',
                 'paymentCategory' => 'ECOM',
                 'creditCardDetails' => [
@@ -95,7 +95,6 @@ class Payment extends ActionRequest
             $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
 
             $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
-            // third-party http client https://github.com/guzzle/guzzle
             $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
                 'headers' => [
                     'Accept' => 'application/jose',
