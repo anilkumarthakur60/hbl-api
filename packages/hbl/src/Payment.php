@@ -8,7 +8,7 @@ class Payment extends ActionRequest
 {
     public function executeFormJose(float $amount, string $orderNo): string
     {
-        $amount = round($amount, 2);
+        $amountText = str_pad(($amount) * 100, 12, '0', STR_PAD_LEFT);
         try {
             $now = Carbon::now();
             $request = [
@@ -19,65 +19,68 @@ class Payment extends ActionRequest
                 ],
                 'officeId' => SecurityData::$MerchantId,
                 'orderNo' => $orderNo,
-                'productDescription' => "Booking Payment Test for $orderNo",
-                'paymentType' => 'CC',
-                'paymentCategory' => 'ECOM',
-                'creditCardDetails' => [
-                    'cardNumber' => '4706860000002325',
-                    'cardExpiryMMYY' => '1225',
-                    'cvvCode' => '761',
-                    'payerName' => 'Demo Sample',
-                ],
-                'storeCardDetails' => [
-                    'storeCardFlag' => 'N',
-                    'storedCardUniqueID' => $this->Guid(),
-                ],
-                'installmentPaymentDetails' => [
-                    'ippFlag' => 'N',
-                    'installmentPeriod' => 0,
-                    'interestType' => null,
-                ],
-                'mcpFlag' => 'N',
-                'request3dsFlag' => 'N',
+                'productDescription' => "Payment for '$orderNo'",
+                // "storeCardDetails" => [
+                //     "storeCardFlag" => "N",
+                //     "storedCardUniqueID" => "{{guid}}"
+                // ],
+
+                // "paymentType" => "CC",
+                // "paymentCategory" => "ECOM",
+
+                // "storeCardDetails" => [
+                //     "storeCardFlag" => "N",
+                //     "storedCardUniqueID" => "{{guid}}"
+                // ],
+
+                // "installmentPaymentDetails" => [
+                //     "ippFlag" => "N",
+                //     "installmentPeriod" => 0,
+                //     "interestType" => null
+                // ],
+                // "mcpFlag" => "N",
+                // "request3dsFlag" => 'N',
                 'transactionAmount' => [
-                    'amountText' => '000000100000',
+                    'amountText' => $amountText,
                     'currencyCode' => 'NPR',
                     'decimalPlaces' => 2,
-                    'amount' => 1000,
+                    'amount' => $amount,
                 ],
                 'notificationURLs' => [
-                    'confirmationURL' => 'http://example-confirmation.com',
-                    'failedURL' => 'http://example-failed.com',
-                    'cancellationURL' => 'http://example-cancellation.com',
-                    'backendURL' => 'http://example-backend.com',
+                    'confirmationURL' => route('payment.success'),
+                    'failedURL' => route('payment.failed'),
+                    'cancellationURL' => route('payment.cancel'),
+                    'backendURL' => route('payment.backend'),
                 ],
-                'deviceDetails' => [
-                    'browserIp' => '1.0.0.1',
-                    'browser' => 'Postman Browser',
-                    'browserUserAgent' => 'PostmanRuntime/7.26.8 - not from header',
-                    'mobileDeviceFlag' => 'N',
-                ],
-                'purchaseItems' => [
-                    [
-                        'purchaseItemType' => 'ticket',
-                        'referenceNo' => '2322460376026',
-                        'purchaseItemDescription' => 'Bundled insurance',
-                        'purchaseItemPrice' => [
-                            'amountText' => '000000100000',
-                            'currencyCode' => 'NPR',
-                            'decimalPlaces' => 2,
-                            'amount' => 1000,
-                        ],
-                        'subMerchantID' => 'string',
-                        'passengerSeqNo' => 1,
-                    ],
-                ],
-                'customFieldList' => [
-                    [
-                        'fieldName' => 'TestField',
-                        'fieldValue' => 'This is test',
-                    ],
-                ],
+
+                // "deviceDetails" => [
+                //     "browserIp" => "1.0.0.1",
+                //     "browser" => "Postman Browser",
+                //     "browserUserAgent" => "PostmanRuntime/7.26.8 - not from header",
+                //     "mobileDeviceFlag" => "N"
+                // ],
+
+                // "purchaseItems" => [
+                //     [
+                //         "purchaseItemType" => "ticket",
+                //         "referenceNo" => "2322460376026",
+                //         "purchaseItemDescription" => "Bundled insurance",
+                //         "purchaseItemPrice" => [
+                //             "amountText" => "000000000100",
+                //             "currencyCode" => "NPR",
+                //             "decimalPlaces" => 2,
+                //             "amount" => 1
+                //         ],
+                //         "subMerchantID" => "string",
+                //         "passengerSeqNo" => 1
+                //     ]
+                // ],
+                // "customFieldList" => [
+                //     [
+                //         "fieldName" => "TestField",
+                //         "fieldValue" => "This is test"
+                //     ]
+                // ]
             ];
 
             $payload = [
