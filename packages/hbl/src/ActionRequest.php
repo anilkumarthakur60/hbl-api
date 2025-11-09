@@ -101,8 +101,8 @@ abstract class ActionRequest
         );
         $this->claimCheckerManager = new ClaimCheckerManager(
             checkers: [
-                new NotBeforeChecker,
-                new ExpirationTimeChecker,
+                new NotBeforeChecker(0),
+                new ExpirationTimeChecker(0),
                 new AudienceChecker(SecurityData::$AccessToken),
                 new IssuerChecker(['PacoIssuer']),
             ]
@@ -110,17 +110,14 @@ abstract class ActionRequest
 
         $this->jweCompactSerializer = new JWECompactSerializer;
         $this->jweBuilder = new JWEBuilder(
-            algorithmManager: new AlgorithmManager(
+            new AlgorithmManager(
                 algorithms: [
                     new RSAOAEP,
+                    new A128CBCHS256,
                 ],
             ),
-            contentEncryptionAlgorithmManager: new AlgorithmManager(
-                algorithms: [
-                    new A128CBCHS256,
-                ]
-            ),
-            compressionManager: new CompressionMethodManager(
+            null,
+            new CompressionMethodManager(
                 methods: []
             )
         );
@@ -131,16 +128,14 @@ abstract class ActionRequest
                 ]
             ),
             jweDecrypter: new JWEDecrypter(
-                algorithmManager: new AlgorithmManager(
+                new AlgorithmManager(
                     algorithms: [
                         new RSAOAEP,
-                    ]
-                ),
-                contentEncryptionAlgorithmManager: new AlgorithmManager(
-                    algorithms: [
                         new A128CBCHS256,
                     ]
-                )
+                ),
+                null,
+                null
             ),
             headerCheckerManager: new HeaderCheckerManager(
                 checkers: [
