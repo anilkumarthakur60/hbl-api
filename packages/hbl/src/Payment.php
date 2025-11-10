@@ -35,7 +35,7 @@ class Payment extends ActionRequest
                 'request3dsFlag' => 'N',
                 'transactionAmount' => [
                     'amountText' => $amountText,
-                    'currencyCode' => 'NPR',
+                    'currencyCode' => 'USD',
                     'decimalPlaces' => 2,
                     'amount' => $amount,
                 ],
