@@ -215,7 +215,7 @@ abstract class ActionRequest
      * @param  array<string, mixed>  $additionalValues  Additional key values
      * @return JWK The created JWK private key
      */
-    protected function GetPrivateKey(string $key, ?string $password = null, array $additionalValues = []): JWK
+    protected function getPrivateKey(string $key, ?string $password = null, array $additionalValues = []): JWK
     {
         $privateKey = self::KEY_PREFIX_PRIVATE.$key.self::KEY_SUFFIX_PRIVATE;
 
@@ -230,7 +230,7 @@ abstract class ActionRequest
      * @param  array<string, mixed>  $additionalValues  Additional key values
      * @return JWK The created JWK public key
      */
-    protected function GetPublicKey(string $key, ?string $password = null, array $additionalValues = []): JWK
+    protected function getPublicKey(string $key, ?string $password = null, array $additionalValues = []): JWK
     {
         $publicKey = self::KEY_PREFIX_PUBLIC.$key.self::KEY_SUFFIX_PUBLIC;
 
@@ -245,7 +245,7 @@ abstract class ActionRequest
      * @param  JWK  $encryptingKey  The key for encrypting the JWE
      * @return string The serialized encrypted token
      */
-    protected function EncryptPayload(string $payload, JWK $signingKey, JWK $encryptingKey): string
+    protected function encryptPayload(string $payload, JWK $signingKey, JWK $encryptingKey): string
     {
         // Create JWS (JSON Web Signature)
         $jws = $this->jwsBuilder
@@ -283,7 +283,7 @@ abstract class ActionRequest
      *
      * @throws Exception If decryption or verification fails
      */
-    protected function DecryptToken(string $token, JWK $decryptingKey, JWK $signatureVerificationKey): string
+    protected function decryptToken(string $token, JWK $decryptingKey, JWK $signatureVerificationKey): string
     {
         $recipient = 0;
         $jwe = $this->jweLoader->loadAndDecryptWithKey($token, $decryptingKey, $recipient);
@@ -308,7 +308,7 @@ abstract class ActionRequest
      *
      * @return string The generated GUID in lowercase
      */
-    protected function Guid(): string
+    protected function guid(): string
     {
         $charId = strtoupper(md5(uniqid((string) rand(), true)));
         $guidParts = [];

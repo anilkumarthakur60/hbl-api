@@ -13,7 +13,7 @@ class Payment extends ActionRequest
             $now = Carbon::now();
             $request = [
                 'apiRequest' => [
-                    'requestMessageID' => $this->Guid(),
+                    'requestMessageID' => $this->guid(),
                     'requestDateTime' => $now->utc()->format('Y-m-d\TH:i:s.v\Z'),
                     'language' => 'en-US',
                 ],
@@ -85,10 +85,10 @@ class Payment extends ActionRequest
             ];
 
             $stringPayload = json_encode($payload);
-            $signingKey = $this->GetPrivateKey(SecurityData::$MerchantSigningPrivateKey);
-            $encryptingKey = $this->GetPublicKey(SecurityData::$PacoEncryptionPublicKey);
+            $signingKey = $this->getPrivateKey(SecurityData::$MerchantSigningPrivateKey);
+            $encryptingKey = $this->getPublicKey(SecurityData::$PacoEncryptionPublicKey);
 
-            $body = $this->EncryptPayload($stringPayload, $signingKey, $encryptingKey);
+            $body = $this->encryptPayload($stringPayload, $signingKey, $encryptingKey);
             $response = $this->client->post('api/2.0/Payment/prePaymentUi', [
                 'headers' => [
                     'Accept' => 'application/jose',
@@ -99,10 +99,10 @@ class Payment extends ActionRequest
             ]);
 
             $token = $response->getBody()->getContents();
-            $decryptingKey = $this->GetPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
-            $signatureVerificationKey = $this->GetPublicKey(SecurityData::$PacoSigningPublicKey);
+            $decryptingKey = $this->getPrivateKey(SecurityData::$MerchantDecryptionPrivateKey);
+            $signatureVerificationKey = $this->getPublicKey(SecurityData::$PacoSigningPublicKey);
 
-            return $this->DecryptToken($token, $decryptingKey, $signatureVerificationKey);
+            return $this->decryptToken($token, $decryptingKey, $signatureVerificationKey);
         } catch (\Throwable $th) {
             throw $th;
         }
