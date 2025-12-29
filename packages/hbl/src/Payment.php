@@ -32,7 +32,7 @@ class Payment extends ActionRequest
                     'interestType' => null,
                 ],
                 'mcpFlag' => 'N',
-                'request3dsFlag' => 'N',
+                'request3dsFlag' => 'Y',
                 'transactionAmount' => [
                     'amountText' => $amountText,
                     'currencyCode' => 'USD',

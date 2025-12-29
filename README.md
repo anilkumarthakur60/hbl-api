@@ -290,3 +290,5 @@ $response = $hbl->executeJose();
 -   The app uses **JOSE (JSON Object Signing and Encryption)** for secure communication with HBL gateway.
 
 ---
+
+https://devzone.2c2p.com/docs/paco-intro

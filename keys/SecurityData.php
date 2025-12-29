@@ -1,7 +1,5 @@
 <?php
 
-namespace keys;
-
 class SecurityData
 {
     // public static string $MerchantId = "******";
@@ -15,10 +13,10 @@ class SecurityData
     /**
      * Access Token.
      *
-    USD
-    87075a8448b811edaf360279bcee2f04
-    NPR
-    94e92b1059b211edaf360279bcee2f04
+        USD
+        87075a8448b811edaf360279bcee2f04
+        NPR
+        94e92b1059b211edaf360279bcee2f04
      */
     // public static string $AccessToken = "hdghgdad372c5426d855017aa857c469d";
     public static string $AccessToken = '**************************'; // NPR/USD API KEY///////////

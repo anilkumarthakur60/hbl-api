@@ -91,7 +91,7 @@ abstract class ActionRequest
         }));
 
         return new Client([
-            'base_uri' => SecurityData::$EndPoint,
+            'base_uri' => 'https://core.paco.2c2p.com',
             'handler' => $handler,
         ]);
     }
@@ -263,7 +263,7 @@ abstract class ActionRequest
             ->withPayload($this->jwsCompactSerializer->serialize($jws))
             ->withSharedProtectedHeader([
                 'alg' => SecurityData::$JWEAlgorithm,
-                'enc' => SecurityData::$JWEEncryptionAlgorithm,
+                'enc' => SecurityData::$JWEEncrptionAlgorithm,
                 'kid' => SecurityData::$EncryptionKeyId,
                 'typ' => SecurityData::$TokenType,
             ])
